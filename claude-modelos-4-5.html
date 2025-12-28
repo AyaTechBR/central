@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modelos Claude 4.5: O Guia Completo 2025 | AYA Central</title>
+
+    <!-- Design System: TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+
+    <!-- Core Styles -->
+    <style>
+        /* [CORE] Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html.lenis,
+        html.lenis body {
+            height: auto;
+        }
+
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+            /* Gray 950 */
+            color: #f8fafc;
+            /* Slate 50 */
+            overflow-x: hidden;
+            cursor: none;
+            /* Custom cursor override */
+        }
+
+        /* [CORE] Custom Cursor */
+        .custom-cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(244, 114, 182, 0.8);
+            /* Pink/Anthropic vibe */
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.15s ease-out, width 0.2s, height 0.2s;
+        }
+
+        .custom-cursor.hover {
+            width: 50px;
+            height: 50px;
+            background: rgba(244, 114, 182, 0.1);
+        }
+
+        /* [CORE] Progress Bar - Anthropic Gradient (Orange/Rose/Purple) */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #fdba74, #fb923c, #e11d48, #7c3aed);
+            z-index: 9999;
+            transform-origin: left;
+            transform: scaleX(0);
+        }
+
+        /* [DESIGN] Glassmorphism Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            /* White/8% */
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(244, 114, 182, 0.3);
+            /* Rose border on hover */
+            transform: translateY(-5px);
+        }
+
+        /* [DESIGN] Gradients */
+        .hero-gradient {
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(244, 114, 182, 0.2), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(124, 58, 237, 0.15), transparent);
+            pointer-events: none;
+        }
+
+        .gradient-text {
+            /* Anthropic-like gradient: Orange -> Pink -> Purple */
+            background: linear-gradient(to right, #fb923c, #f472b6, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* [ANIMATIONS] Initial States for GSAP */
+        .reveal-section,
+        .reveal-left,
+        .reveal-right,
+        .reveal-scale {
+            opacity: 0;
+        }
+
+        .reveal-left {
+            transform: translateX(-50px);
+        }
+
+        .reveal-right {
+            transform: translateX(50px);
+        }
+
+        .reveal-scale {
+            transform: scale(0.95);
+        }
+
+        .logo-aya {
+            filter: brightness(0) invert(1);
+            height: 30px;
+            width: auto;
+            flex-shrink: 0;
+            object-fit: contain;
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-rose-500/30">
+
+    <!-- [COMPONENT] Custom Cursor -->
+    <div class="custom-cursor hidden md:block"></div>
+    <div class="progress-bar"></div>
+
+    <!-- [LAYOUT] Header / Navigation -->
+    <header class="fixed top-0 left-0 w-full p-6 z-50 flex justify-between items-center mix-blend-difference">
+        <a href="index.html"
+            class="magnetic-btn flex items-center gap-2 text-sm font-bold tracking-widest uppercase hover:text-rose-400 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Voltar
+        </a>
+    </header>
+
+    <!-- [SECTION] Hero -->
+    <section class="min-h-screen relative flex items-center justify-center p-6 hero-gradient overflow-hidden">
+        <!-- Floating Objects -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-[100px] animate-pulse">
+            </div>
+            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-rose-500/10 rounded-full blur-[100px] animate-pulse"
+                style="animation-delay: 2s"></div>
+        </div>
+
+        <!-- Particles Container -->
+        <div id="particles" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-7xl mx-auto w-full text-center">
+            <!-- Badge -->
+            <div
+                class="floating-badge inline-flex items-center gap-4 px-5 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md mb-10">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></div>
+                    <span class="text-xs font-bold tracking-widest uppercase text-slate-300">Whitepaper Técnico •
+                        Dezembro 2025</span>
+                </div>
+
+                <div class="flex items-center gap-3 border-l border-white/20 pl-4">
+                    <span class="text-[9px] text-slate-500 font-black uppercase tracking-widest">Powered by</span>
+                    <img src="assets/img/AYA.png" alt="AYA" class="logo-aya">
+                </div>
+            </div>
+
+            <!-- Title -->
+            <div class="hero-title mb-10">
+                <h1 class="text-5xl md:text-8xl font-black leading-[0.9] tracking-tight text-white mb-4 block">
+                    Família Claude
+                </h1>
+                <span class="text-5xl md:text-8xl font-black leading-[0.9] tracking-tight block gradient-text">
+                    Série 4.5
+                </span>
+            </div>
+
+            <!-- Description -->
+            <p
+                class="hero-subtitle text-xl md:text-2xl text-slate-400 max-w-4xl mx-auto font-light leading-relaxed mb-16 opacity-0">
+                A fronteira mais avançada da IA generativa (2025). <strong>Haiku 4.5</strong> revoluciona com 125
+                tokens/s, <strong>Sonnet 4.5</strong> define o padrão universal, e <strong>Opus 4.5</strong> introduz o
+                "Parâmetro de Esforço" para raciocínio profundo.
+            </p>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div
+            class="scroll-indicator absolute bottom-10 w-full flex flex-col items-center justify-center gap-2 text-slate-500 z-20">
+            <span class="text-[10px] uppercase tracking-[0.3em] font-bold">Scroll para explorar</span>
+            <svg class="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- [COMPONENT] Mini Summmary -->
+    <div class="max-w-5xl mx-auto -mt-10 px-6 relative z-30 mb-24">
+        <div
+            class="glass-card p-2 rounded-2xl border border-white/10 flex flex-wrap md:flex-nowrap justify-between gap-2 shadow-2xl backdrop-blur-xl">
+            <!-- Item 1 -->
+            <a href="#guia-pratico"
+                class="group flex-1 flex items-center gap-3 px-6 py-4 rounded-xl hover:bg-white/5 transition-all">
+                <span
+                    class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">01</span>
+                <div class="flex flex-col">
+                    <span
+                        class="text-[10px] uppercase tracking-widest text-slate-500 group-hover:text-indigo-300">Resumo</span>
+                    <span class="text-sm font-bold text-white">Qual Usar?</span>
+                </div>
+            </a>
+            <div class="hidden md:block w-px bg-white/10 my-4"></div>
+            <!-- Item 2 -->
+            <a href="#pilares"
+                class="group flex-1 flex items-center gap-3 px-6 py-4 rounded-xl hover:bg-white/5 transition-all">
+                <span
+                    class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">02</span>
+                <div class="flex flex-col">
+                    <span
+                        class="text-[10px] uppercase tracking-widest text-slate-500 group-hover:text-emerald-300">Modelos</span>
+                    <span class="text-sm font-bold text-white">Os 3 Pilares</span>
+                </div>
+            </a>
+            <div class="hidden md:block w-px bg-white/10 my-4"></div>
+            <!-- Item 3 -->
+            <a href="#detalhes"
+                class="group flex-1 flex items-center gap-3 px-6 py-4 rounded-xl hover:bg-white/5 transition-all">
+                <span
+                    class="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center text-orange-400 group-hover:scale-110 transition-transform">03</span>
+                <div class="flex flex-col">
+                    <span
+                        class="text-[10px] uppercase tracking-widest text-slate-500 group-hover:text-orange-300">Análise</span>
+                    <span class="text-sm font-bold text-white">Benchmarks</span>
+                </div>
+            </a>
+            <div class="hidden md:block w-px bg-white/10 my-4"></div>
+            <!-- Item 4 -->
+            <a href="#precos"
+                class="group flex-1 flex items-center gap-3 px-6 py-4 rounded-xl hover:bg-white/5 transition-all">
+                <span
+                    class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">04</span>
+                <div class="flex flex-col">
+                    <span
+                        class="text-[10px] uppercase tracking-widest text-slate-500 group-hover:text-purple-300">Custo</span>
+                    <span class="text-sm font-bold text-white">Tabela Preços</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- [SECTION] Practical Guide (Consumer Focused) - MOVED TO TOP -->
+    <section id="guia-pratico" class="py-20 px-6 relative bg-white/5 border-y border-white/5">
+        <div class="max-w-6xl mx-auto">
+            <div class="reveal-section mb-16 text-center">
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 mb-6">
+                    <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+                    <span class="text-xs font-bold tracking-widest uppercase text-indigo-300">Guia do Consumidor
+                        2025</span>
+                </div>
+                <h2 class="text-4xl md:text-5xl font-black mb-6 text-white tracking-tight">
+                    Qual Claude Usar? <span class="gradient-text">Em 30 Segundos</span>
+                </h2>
+                <p class="text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto">
+                    Não quer ler especificações técnicas? Aqui está o resumo direto ao ponto para o seu dia a dia.
+                </p>
+            </div>
+
+            <!-- 1. The 3 Models Simplified -->
+            <div class="grid md:grid-cols-3 gap-8 mb-24">
+                <!-- Haiku Card -->
+                <div class="glass-card p-8 rounded-3xl reveal-section border-t-4 border-t-emerald-500">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-black text-white">Haiku</h3>
+                        <span class="text-3xl">⚡</span>
+                    </div>
+                    <div class="text-lg font-bold text-emerald-400 mb-2">"O Flash"</div>
+                    <p class="text-sm text-slate-400 mb-6 border-b border-white/10 pb-6 leading-relaxed">
+                        Responde em 1 segundo. Custa uma fração do preço. Use quando você precisa de velocidade
+                        instantânea e volume.
+                    </p>
+                    <ul class="space-y-3 text-sm text-slate-300">
+                        <li class="flex gap-2"><span class="text-emerald-500">✓</span> Chatbots de atendimento</li>
+                        <li class="flex gap-2"><span class="text-emerald-500">✓</span> Traduzir 1000 arquivos</li>
+                        <li class="flex gap-2"><span class="text-emerald-500">✓</span> Automatizar fluxos simples</li>
+                    </ul>
+                </div>
+
+                <!-- Sonnet Card (Featured) -->
+                <div
+                    class="glass-card p-8 rounded-3xl reveal-section border-t-4 border-t-orange-500 relative transform md:-translate-y-4 shadow-xl shadow-orange-500/10">
+                    <div
+                        class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-orange-500 text-black text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+                        Recomendado (95% dos casos)
+                    </div>
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-black text-white">Sonnet</h3>
+                        <span class="text-3xl">🏆</span>
+                    </div>
+                    <div class="text-lg font-bold text-orange-400 mb-2">"O Ouro"</div>
+                    <p class="text-sm text-slate-400 mb-6 border-b border-white/10 pb-6 leading-relaxed">
+                        O melhor programador do mundo. Escreve bem, raciocina bem e tem preço justo. Se não sabe qual
+                        usar, use este.
+                    </p>
+                    <ul class="space-y-3 text-sm text-slate-300">
+                        <li class="flex gap-2"><span class="text-orange-500">✓</span> Programar (Python, JS)</li>
+                        <li class="flex gap-2"><span class="text-orange-500">✓</span> Analisar Planilhas Excel</li>
+                        <li class="flex gap-2"><span class="text-orange-500">✓</span> Escrever Artigos</li>
+                    </ul>
+                </div>
+
+                <!-- Opus Card -->
+                <div class="glass-card p-8 rounded-3xl reveal-section border-t-4 border-t-indigo-500">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-black text-white">Opus</h3>
+                        <span class="text-3xl">🧠</span>
+                    </div>
+                    <div class="text-lg font-bold text-indigo-400 mb-2">"O Gênio"</div>
+                    <p class="text-sm text-slate-400 mb-6 border-b border-white/10 pb-6 leading-relaxed">
+                        Pensa profundo. Custa 5x mais. Use apenas para problemas complexos que o Sonnet não conseguiu
+                        resolver.
+                    </p>
+                    <ul class="space-y-3 text-sm text-slate-300">
+                        <li class="flex gap-2"><span class="text-indigo-500">✓</span> Matemática complexa</li>
+                        <li class="flex gap-2"><span class="text-indigo-500">✓</span> Refatorar 50 mil linhas</li>
+                        <li class="flex gap-2"><span class="text-indigo-500">✓</span> Pesquisa Científica</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 2. Use Case Matrix -->
+            <div class="mb-24 reveal-section">
+                <h3 class="text-2xl font-bold text-white mb-8 text-center">Tabela Prática: O Que Você Quer Fazer?</h3>
+                <div class="glass-card rounded-3xl overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-white/5 text-xs uppercase tracking-widest text-slate-400">
+                                    <th class="p-4 font-bold">Sua Tarefa</th>
+                                    <th class="p-4 font-bold">Modelo Ideal</th>
+                                    <th class="p-4 font-bold hidden md:table-cell">Por Quê?</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm text-slate-300 divide-y divide-white/5">
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="p-4 font-medium text-white">Análise de Excel / Google Sheets</td>
+                                    <td class="p-4"><span class="text-orange-400 font-bold">Sonnet 4.5</span></td>
+                                    <td class="p-4 hidden md:table-cell">Entende estrutura de dados e sugere fórmulas
+                                        complexas.</td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="p-4 font-medium text-white">Escrever Código (Python/JS)</td>
+                                    <td class="p-4"><span class="text-orange-400 font-bold">Sonnet 4.5</span></td>
+                                    <td class="p-4 hidden md:table-cell">Líder mundial em benchmarks de codificação.
+                                        Código limpo.</td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="p-4 font-medium text-white">Atender Cliente (Chatbot)</td>
+                                    <td class="p-4"><span class="text-emerald-400 font-bold">Haiku 4.5</span></td>
+                                    <td class="p-4 hidden md:table-cell">Resposta instantânea (&lt;1s) e custo
+                                        insignificante.</td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="p-4 font-medium text-white">Refatorar Código Gigante (Legacy)</td>
+                                    <td class="p-4"><span class="text-indigo-400 font-bold">Opus 4.5</span></td>
+                                    <td class="p-4 hidden md:table-cell">Segura toda a base na memória e planeja
+                                        arquitetura.</td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="p-4 font-medium text-white">Traduzir 50 Documentos</td>
+                                    <td class="p-4"><span class="text-emerald-400 font-bold">Haiku 4.5</span></td>
+                                    <td class="p-4 hidden md:table-cell">Rápido e 3x mais barato que Sonnet.</td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="p-4 font-medium text-white">Resumir PDF de 100 páginas</td>
+                                    <td class="p-4"><span class="text-orange-400 font-bold">Sonnet 4.5</span></td>
+                                    <td class="p-4 hidden md:table-cell">Contexto de 200K+ permite ler livros inteiros
+                                        em segundos.</td>
+                                </tr>
+                                <tr class="hover:bg-white/5 transition-colors">
+                                    <td class="p-4 font-medium text-white">Criatividade (Stories, Poesia)</td>
+                                    <td class="p-4"><span class="text-orange-400 font-bold">Sonnet 4.5</span></td>
+                                    <td class="p-4 hidden md:table-cell">Melhor nuance de linguagem natural.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Real Costs & FAQ -->
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- Real Cost Analysis -->
+                <div class="reveal-section">
+                    <h3 class="text-2xl font-bold text-white mb-6">Quanto Custa na Vida Real?</h3>
+                    <div class="space-y-6">
+                        <div class="p-6 rounded-2xl bg-white/5 border border-white/10">
+                            <h4 class="font-bold text-white mb-2">Cenário: Analisar Planilha Média</h4>
+                            <p class="text-xs text-slate-400 mb-4">Input: 1000 tokens (Planilha) | Output: 500 tokens
+                                (Análise)</p>
+
+                            <div class="space-y-3">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-emerald-400">Haiku 4.5</span>
+                                    <span class="text-white">$0.0065 <span class="text-slate-500 text-xs">(R$
+                                            0,03)</span></span>
+                                </div>
+                                <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                                    <div class="bg-emerald-500 h-full" style="width: 10%"></div>
+                                </div>
+
+                                <div class="flex justify-between text-sm mt-2">
+                                    <span class="text-orange-400">Sonnet 4.5</span>
+                                    <span class="text-white">$0.027 <span class="text-slate-500 text-xs">(R$
+                                            0,15)</span></span>
+                                </div>
+                                <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                                    <div class="bg-orange-500 h-full" style="width: 40%"></div>
+                                </div>
+
+                                <div class="flex justify-between text-sm mt-2">
+                                    <span class="text-indigo-400">Opus 4.5</span>
+                                    <span class="text-white">$0.045 <span class="text-slate-500 text-xs">(R$
+                                            0,25)</span></span>
+                                </div>
+                                <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                                    <div class="bg-indigo-500 h-full" style="width: 70%"></div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-4 italic">
+                                * Valores aproximados. Para uso pessoal moderado, Sonnet custa menos de um café por mês
+                                de uso via API.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ -->
+                <div class="reveal-section" style="transition-delay: 0.2s">
+                    <h3 class="text-2xl font-bold text-white mb-6">Dúvidas Comuns</h3>
+                    <div class="space-y-4">
+                        <div class="group">
+                            <h4
+                                class="font-medium text-white group-hover:text-indigo-300 transition-colors cursor-help mb-1 flex items-center gap-2">
+                                <span class="text-indigo-500">?</span> O modelo "pensa" antes de responder?
+                            </h4>
+                            <p class="text-sm text-slate-400 pl-6">Sim. Todos os modelos 4.5 usam "tokens de pensamento"
+                                ocultos para planejar a resposta antes de começar a escrever, reduzindo erros de lógica.
+                            </p>
+                        </div>
+                        <div class="group">
+                            <h4
+                                class="font-medium text-white group-hover:text-indigo-300 transition-colors cursor-help mb-1 flex items-center gap-2">
+                                <span class="text-indigo-500">?</span> O Haiku é "burro"?
+                            </h4>
+                            <p class="text-sm text-slate-400 pl-6">Não. O Haiku 4.5 é mais inteligente que o GPT-4
+                                original em muitos benchmarks, mas é otimizado para ser extremamente rápido e barato.
+                            </p>
+                        </div>
+                        <div class="group">
+                            <h4
+                                class="font-medium text-white group-hover:text-indigo-300 transition-colors cursor-help mb-1 flex items-center gap-2">
+                                <span class="text-indigo-500">?</span> Qual a data de corte?
+                            </h4>
+                            <p class="text-sm text-slate-400 pl-6">O conhecimento vai até Julho de 2025.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [SECTION] The Three Pillars -->
+    <section id="pilares" class="py-32 px-6 relative">
+        <div class="max-w-7xl mx-auto">
+            <div class="reveal-section mb-16">
+                <h2 class="text-4xl md:text-6xl font-black mb-6 text-white tracking-tight">
+                    <span class="text-emerald-500">01.</span> Os Três Pilares<br>
+                    <span class="gradient-text">Haiku, Sonnet e Opus</span>
+                </h2>
+                <p class="text-xl text-slate-300 leading-relaxed max-w-3xl">
+                    Cada modelo foi nomeado com um termo artístico que reflete sua essência: a concisão do Haiku, o
+                    equilíbrio do Sonnet e a grandiosidade do Opus.
+                </p>
+            </div>
+
+            <!-- Content Grid: Cards -->
+            <div class="grid lg:grid-cols-3 gap-8">
+
+                <!-- Haiku Card -->
+                <div
+                    class="glass-card p-10 rounded-[2.5rem] reveal-section border-t-4 border-t-emerald-500 group flex flex-col h-full">
+                    <div class="mb-8 flex justify-between items-start">
+                        <span class="p-3 bg-emerald-500/20 rounded-xl text-3xl">🪶</span>
+                        <span
+                            class="text-xs font-bold uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full">Velocidade</span>
+                    </div>
+                    <h3 class="text-3xl font-black mb-4 text-white">Haiku 4.5</h3>
+                    <p class="text-emerald-200 font-medium mb-6">"Revolucionário da Velocidade"</p>
+                    <p class="text-slate-400 mb-8 text-sm leading-relaxed flex-grow">
+                        Out 2025. <strong>~125 tokens/s</strong> (Velocidade de Leitura). Latência &lt; 1s (Tempo de
+                        Reação Instantâneo). Supera
+                        Sonnet 4 em uso de computador e custa 1/3 do preço. Ideal para tarefas que exigem agilidade.
+                    <div class="space-y-3 pt-6 border-t border-white/5">
+                        <div class="flex justify-between text-xs font-mono text-slate-500">
+                            <span>Velocidade</span>
+                            <span class="text-white">~125 t/s</span>
+                        </div>
+                        <div class="flex justify-between text-xs font-mono text-slate-500">
+                            <span>Custo</span>
+                            <span class="text-emerald-400">$1.00 / 1M</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sonnet Card (Featured) -->
+                <div
+                    class="glass-card p-10 rounded-[2.5rem] reveal-section border-t-4 border-t-orange-500 relative transform md:-translate-y-8 bg-white/5 shadow-orange-900/20 flex flex-col h-full">
+                    <div class="absolute top-0 right-0 p-4">
+                        <span
+                            class="text-[10px] font-black uppercase tracking-widest text-white bg-orange-500 px-3 py-1 rounded-full shadow-lg shadow-orange-500/50">Recomendado</span>
+                    </div>
+                    <div class="mb-8 flex justify-between items-start">
+                        <span class="p-3 bg-orange-500/20 rounded-xl text-3xl">⚖️</span>
+                        <span
+                            class="text-xs font-bold uppercase tracking-widest text-orange-400 bg-orange-500/10 px-3 py-1 rounded-full">Balanceado</span>
+                    </div>
+                    <h3 class="text-3xl font-black mb-4 text-white">Sonnet 4.5</h3>
+                    <p class="text-orange-200 font-medium mb-6">"Padrão Universal"</p>
+                    <p class="text-slate-400 mb-8 text-sm leading-relaxed flex-grow">
+                        Set 2025. O melhor codificador do mundo (77.2% no "Vestibular" SWE-bench). Salto massivo em uso
+                        de computador.
+                        Suporta <strong>1M tokens</strong> (beta) — memória equivalente a 5 livros inteiros.
+                    <div class="space-y-3 pt-6 border-t border-white/5">
+                        <div class="flex justify-between text-xs font-mono text-slate-500">
+                            <span>Coding</span>
+                            <span class="text-white">Líder (77.2%)</span>
+                        </div>
+                        <div class="flex justify-between text-xs font-mono text-slate-500">
+                            <span>Custo</span>
+                            <span class="text-orange-400">$3.00 / 1M</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Opus Card -->
+                <div
+                    class="glass-card p-10 rounded-[2.5rem] reveal-section border-t-4 border-t-purple-500 group flex flex-col h-full">
+                    <div class="mb-8 flex justify-between items-start">
+                        <span class="p-3 bg-purple-500/20 rounded-xl text-3xl">🧠</span>
+                        <span
+                            class="text-xs font-bold uppercase tracking-widest text-purple-400 bg-purple-500/10 px-3 py-1 rounded-full">Inteligência</span>
+                    </div>
+                    <h3 class="text-3xl font-black mb-4 text-white">Opus 4.5</h3>
+                    <p class="text-purple-200 font-medium mb-6">"Pensador Aprofundado"</p>
+                    <p class="text-slate-400 mb-8 text-sm leading-relaxed flex-grow">
+                        Nov 2025. Inteligência máxima. Possui <strong>Parâmetro de Esforço</strong> para alternar entre
+                        "Pensar Rápido" e "Pensar Devagar" (Sistema 1 vs 2). 81% SWE-bench.
+                    <div class="space-y-3 pt-6 border-t border-white/5">
+                        <div class="flex justify-between text-xs font-mono text-slate-500">
+                            <span>Raciocínio</span>
+                            <span class="text-white">Máximo (81%)</span>
+                        </div>
+                        <div class="flex justify-between text-xs font-mono text-slate-500">
+                            <span>Custo</span>
+                            <span class="text-purple-400">$5.00 / 1M</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- [SECTION] Detailed Analysis -->
+    <section id="detalhes" class="py-32 px-6 relative bg-white/5">
+        <div class="max-w-7xl mx-auto">
+            <div class="reveal-section mb-16">
+                <h2 class="text-4xl md:text-6xl font-black mb-6 text-white tracking-tight">
+                    <span class="text-orange-500">02.</span> Análise Técnica<br>
+                    <span class="gradient-text">Benchmarks & Matriz de Decisão</span>
+                </h2>
+                <p class="text-slate-400 text-lg max-w-3xl">
+                    Cada modelo é otimizado para diferentes domínios. Enquanto o Sonnet lidera em adoção por devs, o
+                    Opus domina em raciocínio complexo e o Haiku em throughput.
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-12 mb-24">
+                <!-- Benchmarks Column -->
+                <div class="reveal-left space-y-8">
+                    <h3 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                        <span class="w-2 h-8 bg-orange-500 rounded-full"></span>
+                        Domínio em Benchmarks
+                    </h3>
+
+                    <!-- SWE-bench -->
+                    <div class="glass-card p-6 rounded-2xl">
+                        <div class="flex justify-between mb-2 items-end">
+                            <span class="text-slate-400 font-bold text-sm uppercase tracking-wider">Engenharia de
+                                Software (SWE-bench)</span>
+                            <span class="text-emerald-400 font-mono font-bold">Líder</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="relative pt-1">
+                                <div class="flex mb-2 items-center justify-between">
+                                    <div class="text-xs font-semibold inline-block text-purple-300">Opus 4.5</div>
+                                    <div class="text-xs font-semibold inline-block text-purple-300">81.0%</div>
+                                </div>
+                                <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-white/10">
+                                    <div style="width:81%"
+                                        class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-purple-500">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative pt-1">
+                                <div class="flex mb-2 items-center justify-between">
+                                    <div class="text-xs font-semibold inline-block text-orange-300">Sonnet 4.5</div>
+                                    <div class="text-xs font-semibold inline-block text-orange-300">77.2%</div>
+                                </div>
+                                <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-white/10">
+                                    <div style="width:77.2%"
+                                        class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-orange-500">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative pt-1">
+                                <div class="flex mb-2 items-center justify-between">
+                                    <div class="text-xs font-semibold inline-block text-emerald-300">Haiku 4.5</div>
+                                    <div class="text-xs font-semibold inline-block text-emerald-300">73.3%</div>
+                                </div>
+                                <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-white/10">
+                                    <div style="width:73.3%"
+                                        class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-emerald-500">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- OSWorld -->
+                    <div class="glass-card p-6 rounded-2xl">
+                        <div class="flex justify-between mb-2 items-end">
+                            <span class="text-slate-400 font-bold text-sm uppercase tracking-wider">Uso de Computador
+                                (OSWorld)</span>
+                            <span class="text-purple-400 font-mono font-bold">Dominante</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-4">Salto massivo de 42% para 61.4%. Permite automação
+                            complexa no browser.</p>
+                        <div class="relative pt-1">
+                            <div class="flex mb-2 items-center justify-between">
+                                <div class="text-xs font-semibold inline-block text-purple-300">Opus & Sonnet 4.5</div>
+                                <div class="text-xs font-semibold inline-block text-purple-300">61.4%</div>
+                            </div>
+                            <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-white/10">
+                                <div style="width:61.4%"
+                                    class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-gradient-to-r from-orange-500 to-purple-500">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Other Benchmarks Grid -->
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="glass-card p-4 rounded-xl text-center">
+                            <span class="block text-[10px] uppercase text-slate-500 mb-1">Geral (MMLU)</span>
+                            <span class="block text-xl font-black text-white">88%</span>
+                            <span class="text-[9px] text-purple-400">Opus</span>
+                        </div>
+                        <div class="glass-card p-4 rounded-xl text-center">
+                            <span class="block text-[10px] uppercase text-slate-500 mb-1">Visão (MMMU)</span>
+                            <span class="block text-xl font-black text-white">76.5%</span>
+                            <span class="text-[9px] text-purple-400">Opus</span>
+                        </div>
+                        <div class="glass-card p-4 rounded-xl text-center">
+                            <span class="block text-[10px] uppercase text-slate-500 mb-1">Math (AIME)</span>
+                            <span class="block text-xl font-black text-white">75.5%</span>
+                            <span class="text-[9px] text-purple-400">Opus</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Features & Decision -->
+                <div class="reveal-right">
+
+                    <!-- Exclusivas Features -->
+                    <h3 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                        <span class="w-2 h-8 bg-emerald-500 rounded-full"></span>
+                        Domínio Técnico
+                    </h3>
+
+                    <div class="space-y-6 mb-12">
+                        <!-- Parametro de Esforco (Opus) -->
+                        <div class="glass-card p-6 rounded-2xl border-l-4 border-l-purple-500">
+                            <h4 class="text-lg font-bold text-white mb-2 flex items-center justify-between">
+                                Parâmetro de Esforço
+                                <span class="text-[10px] bg-purple-500/20 text-purple-400 px-2 py-1 rounded">Opus
+                                    Only</span>
+                            </h4>
+                            <p class="text-xs text-slate-400 mb-2">Analogia: Sistema 1 (Rápido) vs Sistema 2 (Devagar)
+                                de Kahneman.</p>
+                            <ul class="text-xs text-slate-300 space-y-1">
+                                <li class="flex gap-2"><span class="text-purple-500">•</span> <strong>Low:</strong>
+                                    Respostas rápidas para tarefas rotineiras.</li>
+                                <li class="flex gap-2"><span class="text-purple-500">•</span> <strong>Mid:</strong>
+                                    Equilíbrio ideal. Performance do Sonnet com -76% tokens.</li>
+                                <li class="flex gap-2"><span class="text-purple-500">•</span> <strong>High:</strong>
+                                    Reflexão profunda. +4.3% melhor que Sonnet.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Consciencia de Contexto -->
+                        <div class="glass-card p-6 rounded-2xl border-l-4 border-l-orange-500">
+                            <h4 class="text-lg font-bold text-white mb-2">Consciência de Contexto</h4>
+                            <div
+                                class="bg-black/30 p-2 rounded border border-white/5 font-mono text-[9px] text-green-400 mb-2">
+                                &lt;system_warning&gt; Token usage: 35k/200k... &lt;/system_warning&gt;
+                            </div>
+                            <p class="text-xs text-slate-500">O modelo gerencia ativamente seu espaço restante.</p>
+                        </div>
+                    </div>
+
+                    <!-- Decision Matrix Header -->
+                    <h3 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                        <span class="w-2 h-8 bg-blue-500 rounded-full"></span>
+                        Matriz de Decisão
+                    </h3>
+
+                    <div class="space-y-6">
+                        <!-- Use Haiku When -->
+                        <div class="glass-card p-6 rounded-2xl border-l-4 border-l-emerald-500">
+                            <h4 class="text-lg font-bold text-white mb-3">Quando usar <span
+                                    class="text-emerald-400">Haiku</span></h4>
+                            <ul class="space-y-2 text-sm text-slate-300">
+                                <li class="flex gap-3"><span class="text-emerald-500">✓</span> Velocidade Crítica
+                                    (&lt;1s)</li>
+                                <li class="flex gap-3"><span class="text-emerald-500">✓</span> Alto Volume / Sub-agentes
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Use Sonnet When -->
+                        <div class="glass-card p-6 rounded-2xl border-l-4 border-l-orange-500">
+                            <h4 class="text-lg font-bold text-white mb-3">Quando usar <span
+                                    class="text-orange-400">Sonnet</span></h4>
+                            <ul class="space-y-2 text-sm text-slate-300">
+                                <li class="flex gap-3"><span class="text-orange-500">✓</span> Coding & Agentes (Padrão)
+                                </li>
+                                <li class="flex gap-3"><span class="text-orange-500">✓</span> Precisa de 1M Contexto
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Use Opus When -->
+                        <div class="glass-card p-6 rounded-2xl border-l-4 border-l-purple-500">
+                            <h4 class="text-lg font-bold text-white mb-3">Quando usar <span
+                                    class="text-purple-400">Opus</span></h4>
+                            <ul class="space-y-2 text-sm text-slate-300">
+                                <li class="flex gap-3"><span class="text-purple-500">✓</span> Pesquisa & Raciocínio
+                                    Profundo</li>
+                                <li class="flex gap-3"><span class="text-purple-500">✓</span> Zero-shot complexo</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Extended Thinking Highlight -->
+                    <div class="mt-8 glass-card p-6 rounded-2xl bg-indigo-500/10 border border-indigo-500/30">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="p-2 bg-indigo-500/20 rounded-lg">
+                                <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold">Pensamento Estendido</h4>
+                                <span class="text-xs text-indigo-300 uppercase tracking-wider">Novo Recurso</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-slate-300 mb-0">
+                            Disponível em todos os modelos. O Claude faz um "Rascunho Mental" (tokens invisíveis) para
+                            planejar antes de
+                            responder, garantindo maior precisão sem poluir o contexto final.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- [SECTION] Pricing & Table -->
+    <section id="precos" class="py-32 px-6 relative">
+        <div class="max-w-5xl mx-auto">
+            <div class="reveal-section mb-12 text-center">
+                <h2 class="text-4xl md:text-5xl font-black mb-4 text-white">Preços & Custo</h2>
+                <p class="text-slate-400">Comparativo por Milhão de Tokens (1M)</p>
+            </div>
+
+            <div class="glass-card rounded-3xl overflow-hidden reveal-scale">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-white/10 bg-white/5">
+                                <th class="p-6 text-xs font-black uppercase tracking-widest text-slate-300">Modelo</th>
+                                <th class="p-6 text-xs font-black uppercase tracking-widest text-slate-300">Input (1M)
+                                </th>
+                                <th class="p-6 text-xs font-black uppercase tracking-widest text-slate-300">Output (1M)
+                                </th>
+                                <th
+                                    class="p-6 text-xs font-black uppercase tracking-widest text-slate-300 hidden md:table-cell">
+                                    Ideal Para</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5 text-sm text-slate-300">
+                            <tr class="hover:bg-emerald-500/5 transition-colors">
+                                <td class="p-6 font-bold text-white flex items-center gap-3">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Haiku 4.5
+                                </td>
+                                <td class="p-6 font-mono text-emerald-400">$1.00</td>
+                                <td class="p-6 font-mono text-emerald-400">$5.00</td>
+                                <td class="p-6 hidden md:table-cell">Chatbots 24/7, Sub-agentes</td>
+                            </tr>
+                            <tr class="hover:bg-orange-500/5 transition-colors">
+                                <td class="p-6 font-bold text-white flex items-center gap-3">
+                                    <span class="w-2 h-2 rounded-full bg-orange-500"></span> Sonnet 4.5
+                                </td>
+                                <td class="p-6 font-mono text-orange-400">$3.00</td>
+                                <td class="p-6 font-mono text-orange-400">$15.00</td>
+                                <td class="p-6 hidden md:table-cell">Coding, RAG, Análise Geral (Recomendado)</td>
+                            </tr>
+                            <tr class="hover:bg-purple-500/5 transition-colors">
+                                <td class="p-6 font-bold text-white flex items-center gap-3">
+                                    <span class="w-2 h-2 rounded-full bg-purple-500"></span> Opus 4.5
+                                </td>
+                                <td class="p-6 font-mono text-purple-400">$5.00</td>
+                                <td class="p-6 font-mono text-purple-400">$25.00</td>
+                                <td class="p-6 hidden md:table-cell">Pesquisa Profunda, Zero-shot</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div
+                    class="p-6 bg-black/20 border-t border-white/5 text-xs text-slate-500 flex justify-between flex-wrap gap-4">
+                    <span>💡 <strong>Dica de Economia:</strong> Use "Prompt Caching" para reduzir custos em até 90% em
+                        inputs repetitivos.</span>
+                    <span class="text-slate-600">Preços ref. Dez 2025</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [SECTION] Roadmap 2026 -->
+    <section class="py-24 px-6 relative border-t border-white/5">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-black mb-12 text-white text-center">Roadmap & Futuro (2026+)</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="glass-card p-8 rounded-3xl reveal-left">
+                    <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-4 block">Próxima
+                        Geração</span>
+                    <h3 class="text-2xl font-bold text-white mb-4">Claude 5</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                        Previsto para final de 2026. Treinado na infraestrutura "Project Rainier" com >1M chips AWS
+                        Trainium v2. Foco em raciocínio autónomo de longo prazo.
+                    </p>
+                </div>
+                <div class="glass-card p-8 rounded-3xl reveal-right">
+                    <span class="text-xs font-bold text-rose-400 uppercase tracking-widest mb-4 block">Integração</span>
+                    <h3 class="text-2xl font-bold text-white mb-4">Salesforce & Agentes</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                        Integração completa com Agentforce 360. Suporte nativo a multimodalidade real (vídeo e áudio
+                        além de texto/imagem) e janelas de contexto >10M tokens.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [SECTION] Verdict / Conclusion -->
+    <section id="veredicto" class="py-32 px-6 relative overflow-hidden">
+        <div class="max-w-5xl mx-auto">
+            <div class="relative rounded-[3rem] p-16 overflow-hidden reveal-scale">
+                <!-- Background Gradient -->
+                <div class="absolute inset-0 bg-gradient-to-br from-orange-600 via-rose-600 to-purple-600"></div>
+
+                <div class="relative z-10">
+                    <h2 class="text-5xl md:text-6xl font-black mb-10 text-white">Veredito</h2>
+                    <div class="space-y-6 text-white/90 text-xl leading-relaxed">
+                        <p>
+                            A Anthropic acertou no equilíbrio. Para 90% dos casos, o <strong
+                                class="text-white bg-white/20 px-2 rounded">Sonnet 4.5</strong> é a escolha óbvia:
+                            inteligente o suficiente para codar sistemas inteiros e rápido o suficiente para conversar.
+                        </p>
+                        <p>
+                            Mas não ignore o <strong class="text-white bg-white/20 px-2 rounded">Haiku</strong>. Sua
+                            eficiência de custo ($0.80) viabiliza agentes autônomos que rodam em loop sem quebrar a
+                            banca. O Opus é a "arma secreta" para quando o Sonnet falha.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [LAYOUT] Footer -->
+    <footer class="py-20 px-6 border-t border-white/10">
+        <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 text-slate-500">
+            <div class="reveal-section">
+                <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Metodologia</h4>
+                <p class="text-xs leading-relaxed">
+                    Dados coletados da documentação técnica da Anthropic (Out/Nov 2025), benchmarks SWE-bench Verified e
+                    OSWorld. Preços vigentes na data de publicação.
+                </p>
+            </div>
+            <div class="reveal-section" style="transition-delay: 0.1s;">
+                <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Fontes</h4>
+                <p class="text-xs leading-relaxed italic">
+                    Anthropic Newsroom, Platform Documentation, Datacamp Analysis, CosmicJS benchmarks.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- [COMPONENT] Bottom Brand -->
+    <div class="pb-24 pt-12 flex flex-col justify-center items-center gap-4">
+        <img src="assets/img/AYA.png" alt="AYA Logo" class="h-20 opacity-80" style="filter: brightness(0) invert(1);">
+        <p class="text-sm font-bold uppercase tracking-[0.4em] text-slate-500">The future is intelligence</p>
+    </div>
+
+    <!-- Fixed Bar -->
+    <div
+        class="fixed bottom-0 left-0 w-full bg-black/80 backdrop-blur-md py-4 text-[9px] text-slate-500 font-bold uppercase tracking-[0.5em] text-center z-50 border-t border-white/5">
+        Este documento é uma análise técnica independente • Powered by AYA
+    </div>
+
+    <!-- [LOGIC] Scripts -->
+    <script>
+        // 1. Initialize Smooth Scroll (Lenis)
+        const lenis = new Lenis({ duration: 1.2, smoothWheel: true });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+
+        // 2. Register GSAP Plugins
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 3. Global Animations
+
+        // Progress Bar
+        gsap.to('.progress-bar', {
+            scaleX: 1, ease: 'none',
+            scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 0.3 }
+        });
+
+        // Reveal Sections
+        gsap.utils.toArray('.reveal-section').forEach((el) => {
+            gsap.to(el, {
+                opacity: 1, y: 0, duration: 1, ease: 'power3.out',
+                scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none reverse' }
+            });
+        });
+
+        gsap.utils.toArray('.reveal-left').forEach(el => {
+            gsap.to(el, { opacity: 1, x: 0, duration: 1.2, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 80%' } });
+        });
+
+        gsap.utils.toArray('.reveal-right').forEach(el => {
+            gsap.to(el, { opacity: 1, x: 0, duration: 1.2, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 80%' } });
+        });
+
+        gsap.utils.toArray('.reveal-scale').forEach(el => {
+            gsap.to(el, { opacity: 1, scale: 1, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 85%' } });
+        });
+
+        // Hero Animation Sequence
+        const heroTl = gsap.timeline();
+        heroTl.from('.floating-badge', { y: 50, opacity: 0, duration: 1 })
+            .from('.hero-title span', { y: 100, opacity: 0, stagger: 0.2, duration: 1.2, ease: 'power4.out' }, '-=0.5')
+            .to('.hero-subtitle', { opacity: 1, y: 0, duration: 1 }, '-=0.5');
+
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.position = 'absolute'; // Ensure position is absolute
+                particle.style.width = '4px'; // Inline style to ensure visibility if CSS missing
+                particle.style.height = '4px';
+                particle.style.background = 'rgba(244, 114, 182, 0.4)'; // Rose tint
+                particle.style.borderRadius = '50%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+
+                gsap.to(particle, {
+                    y: -window.innerHeight,
+                    x: (Math.random() - 0.5) * 200,
+                    opacity: 0,
+                    duration: 10 + Math.random() * 10,
+                    repeat: -1,
+                    ease: 'none',
+                    delay: Math.random() * 10
+                });
+            }
+        }
+        createParticles();
+
+        // 4. Custom Cursor Logic
+        const cursor = document.querySelector('.custom-cursor');
+        let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
+        document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+        function animateCursor() {
+            cursorX += (mouseX - cursorX) * 0.1; cursorY += (mouseY - cursorY) * 0.1;
+            cursor.style.left = (cursorX - 10) + 'px'; cursor.style.top = (cursorY - 10) + 'px';
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        document.querySelectorAll('a, button, .glass-card, tr').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+    </script>
+</body>
+
+</html>

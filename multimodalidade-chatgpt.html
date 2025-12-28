@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multimodalidade do ChatGPT e Modo Agent: Análise Completa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- GSAP + ScrollTrigger + Lenis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html.lenis,
+        html.lenis body {
+            height: auto;
+        }
+
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+
+        .lenis.lenis-smooth iframe {
+            pointer-events: none;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+            color: #f8fafc;
+            overflow-x: hidden;
+            cursor: none;
+            /* User requested to hide cursor */
+        }
+
+        /* [CORE] Custom Cursor */
+        .custom-cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(99, 102, 241, 0.8);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.15s ease-out, width 0.2s, height 0.2s;
+        }
+
+        .custom-cursor.hover {
+            width: 50px;
+            height: 50px;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899);
+            z-index: 9999;
+            transform-origin: left;
+            transform: scaleX(0);
+        }
+
+        /* Glass morphism cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        /* Hero gradient */
+        .hero-gradient {
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.3), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(139, 92, 246, 0.15), transparent),
+                radial-gradient(ellipse 50% 30% at 20% 80%, rgba(236, 72, 153, 0.1), transparent);
+        }
+
+        /* Animated gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #10b981, #06b6d4, #6366f1, #8b5cf6);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 8s ease infinite;
+            will-change: background-position;
+            transform: translateZ(0);
+        }
+
+        @keyframes gradientShift {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        /* Floating particles */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(99, 102, 241, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            will-change: transform;
+            transform: translateZ(0);
+        }
+
+        /* GPU acceleration for animated orbs */
+        .animate-pulse {
+            will-change: opacity;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+
+        /* Reduce animations for users who prefer reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+
+            .gradient-text,
+            .particle,
+            .animate-pulse,
+            .floating-badge {
+                animation: none !important;
+            }
+        }
+
+        /* Section reveal */
+        .reveal-section {
+            opacity: 0;
+            transform: translateY(100px);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-100px);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(100px);
+        }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        /* Split text */
+        .split-char {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(100%);
+        }
+
+        .split-word {
+            display: inline-block;
+            overflow: hidden;
+        }
+
+        /* Magnetic button */
+        .magnetic-btn {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .magnetic-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            transform: translateX(-100%);
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .magnetic-btn:hover::before {
+            transform: translateX(0);
+        }
+
+        /* Glow effect */
+        .glow {
+            box-shadow:
+                0 0 20px rgba(99, 102, 241, 0.3),
+                0 0 40px rgba(99, 102, 241, 0.2),
+                0 0 60px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Counter animation */
+        .counter {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Horizontal scroll section */
+        .horizontal-scroll {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 2rem;
+        }
+
+        .horizontal-scroll-item {
+            flex: 0 0 auto;
+            width: 400px;
+        }
+
+        /* Floating badges */
+        .floating-badge {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            25% {
+                transform: translateY(-10px) rotate(2deg);
+            }
+
+            75% {
+                transform: translateY(5px) rotate(-2deg);
+            }
+        }
+
+        /* Noise overlay */
+        .noise-overlay::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+        }
+
+        /* Marquee */
+        .marquee {
+            display: flex;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .marquee-content {
+            flex-shrink: 0;
+            display: flex;
+            gap: 4rem;
+            animation: marquee 30s linear infinite;
+        }
+
+        @keyframes marquee {
+            from {
+                transform: translateX(0);
+            }
+
+            to {
+                transform: translateX(-100%);
+            }
+        }
+
+        /* Number counter glow */
+        .stat-glow {
+            text-shadow:
+                0 0 10px rgba(16, 185, 129, 0.5),
+                0 0 20px rgba(16, 185, 129, 0.3),
+                0 0 30px rgba(16, 185, 129, 0.2);
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-20px);
+            }
+
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Table hover effects */
+        .table-row {
+            transition: all 0.3s ease;
+        }
+
+        .table-row:hover {
+            background: rgba(99, 102, 241, 0.05);
+            transform: scale(1.01);
+        }
+
+        /* Badge animations */
+        .badge-pro {
+            @apply bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border border-emerald-500/30;
+        }
+
+        .badge-con {
+            @apply bg-rose-500/20 text-rose-400 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border border-rose-500/30;
+        }
+
+        /* Feature bar animation */
+        .feature-bar {
+            transform-origin: left;
+            transform: scaleX(0);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(#6366f1, #8b5cf6);
+            border-radius: 3px;
+        }
+
+        .logo-aya {
+            filter: brightness(0) invert(1);
+            height: 30px;
+            width: auto;
+            flex-shrink: 0;
+            object-fit: contain;
+        }
+
+        /* Responsive hero badge */
+        @media (max-width: 640px) {
+            .floating-badge {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: center;
+            }
+
+            .floating-badge .border-l {
+                border-left: none;
+                border-top: 1px solid rgba(255, 255, 255, 0.2);
+                padding-left: 0;
+                padding-top: 0.75rem;
+            }
+        }
+
+        .logo-aya-footer {
+            filter: brightness(0) invert(1);
+            height: 40px;
+            width: auto;
+            opacity: 0.6;
+        }
+
+        /* Scroll hint animation */
+        .scroll-hint {
+            animation: swipeHint 2s ease-in-out infinite;
+        }
+
+        @keyframes swipeHint {
+
+            0%,
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+
+            50% {
+                transform: translateX(10px);
+                opacity: 0.5;
+            }
+        }
+
+        .scroll-hint-container {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .scroll-hint-container {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- [LAYOUT] Header / Navigation -->
+    <header class="fixed top-0 left-0 w-full p-6 z-50 flex justify-between items-center mix-blend-difference">
+        <a href="index.html"
+            class="magnetic-btn flex items-center gap-2 text-sm font-bold tracking-widest uppercase hover:text-indigo-400 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Voltar
+        </a>
+    </header>
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor"></div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar"></div>
+
+    <!-- Hero Section -->
+    <header class="hero-gradient min-h-screen flex items-center justify-center relative overflow-hidden noise-overlay">
+        <!-- Animated background orbs -->
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-[150px] animate-pulse">
+        </div>
+        <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-500/15 rounded-full blur-[120px] animate-pulse"
+            style="animation-delay: 1s;"></div>
+        <div class="absolute top-1/2 right-1/3 w-64 h-64 bg-pink-500/10 rounded-full blur-[100px] animate-pulse"
+            style="animation-delay: 2s;"></div>
+
+        <!-- Floating particles container -->
+        <div id="particles" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
+
+        <div class="max-w-6xl mx-auto px-6 relative z-10 text-center">
+            <!-- Badge -->
+            <div class="floating-badge inline-flex items-center gap-4 mb-10">
+                <span
+                    class="px-5 py-2 rounded-full bg-white/5 border border-white/10 text-indigo-300 text-xs font-bold uppercase tracking-[0.2em] backdrop-blur-sm">
+                    Whitepaper Técnico • Dezembro 2025
+                </span>
+                <div class="flex items-center gap-3 border-l border-white/20 pl-4">
+                    <span class="text-[9px] text-slate-500 font-black uppercase tracking-widest">Powered by</span>
+                    <img src="assets/img/AYA.png" alt="AYA" class="logo-aya">
+                </div>
+            </div>
+
+            <!-- Main Title with split text animation -->
+            <h1 class="hero-title text-5xl md:text-8xl font-black mb-10 leading-[0.9] tracking-tight">
+                <span class="block text-white">Multimodalidade</span>
+                <span class="block gradient-text mt-2">& Modo Agent</span>
+            </h1>
+
+            <!-- Subtitle -->
+            <p
+                class="hero-subtitle text-xl md:text-2xl text-slate-400 max-w-4xl mx-auto font-light leading-relaxed mb-16 opacity-0">
+                Uma análise aprofundada sobre a evolução do ChatGPT para um sistema agentic, capaz de processar
+                arquivos
+                complexos e executar tarefas autonomamente.
+            </p>
+        </div>
+
+        <!-- Scroll indicator -->
+        <div
+            class="scroll-indicator absolute bottom-10 left-0 right-0 w-full flex flex-col items-center justify-center gap-2 text-slate-500 z-20 text-center">
+            <span class="text-[10px] uppercase tracking-[0.3em] font-bold">Scroll para explorar</span>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+        </div>
+    </header>
+
+    <!-- Mini Summary (Modern/Next.js Style) -->
+    <div class="max-w-4xl mx-auto -mt-10 px-6 relative z-30 mb-24">
+        <div
+            class="glass-card p-2 rounded-2xl border border-white/10 flex flex-wrap md:flex-nowrap justify-between gap-2 shadow-2xl shadow-indigo-500/10 backdrop-blur-xl">
+            <a href="#inputs"
+                class="group flex-1 flex items-center gap-3 px-6 py-4 rounded-xl hover:bg-white/5 transition-all cursor-pointer">
+                <span
+                    class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">01</span>
+                <div class="flex flex-col">
+                    <span
+                        class="text-[10px] uppercase tracking-widest text-slate-500 font-bold group-hover:text-indigo-300">Entrada</span>
+                    <span class="text-sm font-bold text-white">Inputs</span>
+                </div>
+            </a>
+            <div class="hidden md:block w-px bg-white/10 my-4"></div>
+            <a href="#outputs"
+                class="group flex-1 flex items-center gap-3 px-6 py-4 rounded-xl hover:bg-white/5 transition-all cursor-pointer">
+                <span
+                    class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">02</span>
+                <div class="flex flex-col">
+                    <span
+                        class="text-[10px] uppercase tracking-widest text-slate-500 font-bold group-hover:text-purple-300">Saída</span>
+                    <span class="text-sm font-bold text-white">Outputs</span>
+                </div>
+            </a>
+            <div class="hidden md:block w-px bg-white/10 my-4"></div>
+            <a href="#agent"
+                class="group flex-1 flex items-center gap-3 px-6 py-4 rounded-xl hover:bg-white/5 transition-all cursor-pointer">
+                <span
+                    class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">03</span>
+                <div class="flex flex-col">
+                    <span
+                        class="text-[10px] uppercase tracking-widest text-slate-500 font-bold group-hover:text-emerald-300">Poder</span>
+                    <span class="text-sm font-bold text-white">Agent Mode</span>
+                </div>
+            </a>
+            <div class="hidden md:block w-px bg-white/10 my-4"></div>
+            <a href="#models"
+                class="group flex-1 flex items-center gap-3 px-6 py-4 rounded-xl hover:bg-white/5 transition-all cursor-pointer">
+                <span
+                    class="w-8 h-8 rounded-lg bg-rose-500/20 flex items-center justify-center text-rose-400 group-hover:scale-110 transition-transform">04</span>
+                <div class="flex flex-col">
+                    <span
+                        class="text-[10px] uppercase tracking-widest text-slate-500 font-bold group-hover:text-rose-300">Tech</span>
+                    <span class="text-sm font-bold text-white">Modelos</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <section class="py-32 px-6 relative">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Stat Card 1 -->
+                <div class="stat-card glass-card p-10 rounded-[2rem] reveal-section">
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                            </svg>
+                        </div>
+                        <span class="text-indigo-400 font-bold uppercase text-xs tracking-widest">Limite de
+                            Upload</span>
+                    </div>
+                    <h3 class="text-5xl font-black text-white mb-3">
+                        <span class="counter" data-target="512">0</span> MB
+                    </h3>
+                    <p class="text-slate-500 text-sm leading-relaxed">Capacidade robusta para arquivos grandes,
+                        aceitando PDFs, CSVs e imagens complexas.</p>
+                </div>
+
+                <!-- Stat Card 2 -->
+                <div class="stat-card glass-card p-10 rounded-[2rem] reveal-section" style="transition-delay: 0.1s;">
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                            </svg>
+                        </div>
+                        <span class="text-emerald-400 font-bold uppercase text-xs tracking-widest">Raciocínio</span>
+                    </div>
+                    <h3 class="text-5xl font-black text-white mb-3">
+                        <span class="counter stat-glow" data-target="95.2" data-decimal="true">0</span>%
+                    </h3>
+                    <p class="text-slate-500 text-sm leading-relaxed">Performance do GPT-5 em benchmarks de
+                        matemática e
+                        raciocínio (AIME).</p>
+                </div>
+
+                <!-- Stat Card 3 -->
+                <div class="stat-card glass-card p-10 rounded-[2rem] reveal-section glow"
+                    style="transition-delay: 0.2s;">
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-12 h-12 rounded-2xl bg-rose-500/20 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <span class="text-rose-400 font-bold uppercase text-xs tracking-widest">Contexto
+                            Máximo</span>
+                    </div>
+                    <h3 class="text-5xl font-black text-white mb-3">400K</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed">Tokens de contexto no GPT-5.1 para análises
+                        massivas.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 01: Inputs -->
+    <section id="inputs" class="py-32 px-6 relative overflow-hidden">
+        <div class="max-w-6xl mx-auto">
+            <div class="reveal-left">
+                <h2 class="text-4xl md:text-6xl font-black mb-16 text-white tracking-tight">
+                    <span class="text-indigo-500">01.</span> Multimodalidade<br>
+                    <span class="gradient-text">Input de Arquivos</span>
+                </h2>
+            </div>
+
+            <div class="prose prose-invert max-w-none text-slate-400 leading-loose text-xl mb-16 reveal-section">
+                O ChatGPT evoluiu de uma ferramenta baseada apenas em texto para um hub de processamento multimodal.
+                Hoje, ele aceita e processa nativamente uma vasta gama de formatos.
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Text & Docs -->
+                <div
+                    class="reveal-left glass-card p-10 rounded-[2.5rem] group hover:scale-[1.02] transition-all duration-500">
+                    <h3 class="text-2xl font-bold mb-8 flex items-center gap-4">
+                        <span class="p-3 bg-indigo-500/20 rounded-xl text-2xl">📄</span>
+                        <span class="text-white">Documentos e PDFs</span>
+                    </h3>
+                    <ul class="space-y-4 text-slate-400">
+                        <li class="flex items-start gap-3">
+                            <span class="w-1.5 h-1.5 bg-indigo-500 rounded-full mt-2 flex-shrink-0"></span>
+                            <span><strong>PDFs com Visual Retrieval:</strong> O plano Enterprise extrai texto e
+                                imagens.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="w-1.5 h-1.5 bg-indigo-500 rounded-full mt-2 flex-shrink-0"></span>
+                            <span><strong>Formatos:</strong> DOCX, PDF, TXT, MD.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Spreadsheets -->
+                <div
+                    class="reveal-right glass-card p-10 rounded-[2.5rem] group hover:scale-[1.02] transition-all duration-500">
+                    <h3 class="text-2xl font-bold mb-8 flex items-center gap-4">
+                        <span class="p-3 bg-emerald-500/20 rounded-xl text-2xl">📊</span>
+                        <span class="text-white">Planilhas e Dados</span>
+                    </h3>
+                    <ul class="space-y-4 text-slate-400">
+                        <li class="flex items-start gap-3">
+                            <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-2 flex-shrink-0"></span>
+                            <span><strong>Formatos:</strong> XLSX, CSV. (~50MB).</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-2 flex-shrink-0"></span>
+                            <span><strong>Análise:</strong> Transformação, limpeza e gráficos.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Images -->
+                <div
+                    class="reveal-left glass-card p-10 rounded-[2.5rem] group hover:scale-[1.02] transition-all duration-500">
+                    <h3 class="text-2xl font-bold mb-8 flex items-center gap-4">
+                        <span class="p-3 bg-pink-500/20 rounded-xl text-2xl">📷</span>
+                        <span class="text-white">Visão Computacional</span>
+                    </h3>
+                    <ul class="space-y-4 text-slate-400">
+                        <li class="flex items-start gap-3">
+                            <span class="w-1.5 h-1.5 bg-pink-500 rounded-full mt-2 flex-shrink-0"></span>
+                            <span><strong>Formatos:</strong> PNG, JPG, WEBP.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="w-1.5 h-1.5 bg-pink-500 rounded-full mt-2 flex-shrink-0"></span>
+                            <span><strong>Análise:</strong> OCR, interpretação de layouts e diagramas.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Audio -->
+                <div
+                    class="reveal-right glass-card p-10 rounded-[2.5rem] group hover:scale-[1.02] transition-all duration-500">
+                    <h3 class="text-2xl font-bold mb-8 flex items-center gap-4">
+                        <span class="p-3 bg-purple-500/20 rounded-xl text-2xl">🎙️</span>
+                        <span class="text-white">Áudio</span>
+                    </h3>
+                    <ul class="space-y-4 text-slate-400">
+                        <li class="flex items-start gap-3">
+                            <span class="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></span>
+                            <span><strong>Formatos API:</strong> MP3, WAV, M4A.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></span>
+                            <span><strong>Funções:</strong> Transcrição Whisper e análise de tom.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 02: Outputs (NEW) -->
+    <section id="outputs" class="py-32 px-6 relative bg-white/5">
+        <div class="max-w-6xl mx-auto">
+            <div class="reveal-section mb-16">
+                <h2 class="text-4xl md:text-6xl font-black mb-6 text-white tracking-tight">
+                    <span class="text-purple-500">02.</span> Outputs<br>
+                    <span class="gradient-text">O que ele gera?</span>
+                </h2>
+                <p class="text-xl text-slate-300 leading-relaxed max-w-3xl">
+                    O ChatGPT entrega resultados em três níveis de profundidade: Chat, Arquivos e Agente.
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-6">
+                <!-- Level 1: Chat Mode -->
+                <div class="glass-card p-8 rounded-3xl reveal-section border-t-4 border-t-indigo-500">
+                    <div class="mb-6">
+                        <span
+                            class="bg-indigo-500/20 text-indigo-300 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">Nível
+                            1</span>
+                        <h3 class="text-2xl font-bold text-white mt-4">Modo Chat</h3>
+                    </div>
+                    <ul class="space-y-4 text-slate-400 text-sm">
+                        <li class="flex gap-3">
+                            <span class="text-indigo-400">●</span>
+                            <span><strong>Texto & Markdown:</strong> Prosas, listas, tabelas e fórmulas, prontos
+                                para
+                                converter em HTML/PDF.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-indigo-400">●</span>
+                            <span><strong>Código-Fonte:</strong> Gera scripts inteiros (Python, SQL, HTML) e configs
+                                (Docker, YAML).</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-indigo-400">●</span>
+                            <span><strong>Estruturas Lógicas:</strong> JSON e CSV brutos para datasets e
+                                APIs.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Level 2: Files / Code Interpreter -->
+                <div class="glass-card p-8 rounded-3xl reveal-section border-t-4 border-t-purple-500"
+                    style="transition-delay: 0.1s;">
+                    <div class="mb-6">
+                        <span
+                            class="bg-purple-500/20 text-purple-300 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">Nível
+                            2</span>
+                        <h3 class="text-2xl font-bold text-white mt-4">Arquivos Reais</h3>
+                    </div>
+                    <ul class="space-y-4 text-slate-400 text-sm">
+                        <li class="flex gap-3">
+                            <span class="text-purple-400">●</span>
+                            <span><strong>Planilhas (.xlsx/csv):</strong> Tabelas dinâmicas e datasets limpos
+                                gerados
+                                via Python.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-purple-400">●</span>
+                            <span><strong>Documentos (.docx/pdf):</strong> Relatórios formatados e resumos de
+                                reuniões.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-purple-400">●</span>
+                            <span><strong>Imagens:</strong> Geração nativa via DALL·E 3 (PNG/WEBP).</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Level 3: Agent Mode -->
+                <div class="glass-card p-8 rounded-3xl reveal-section border-t-4 border-t-emerald-500"
+                    style="transition-delay: 0.2s;">
+                    <div class="mb-6">
+                        <span
+                            class="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">Nível
+                            3</span>
+                        <h3 class="text-2xl font-bold text-white mt-4">Agent Mode</h3>
+                    </div>
+                    <ul class="space-y-4 text-slate-400 text-sm">
+                        <li class="flex gap-3">
+                            <span class="text-emerald-400">●</span>
+                            <span><strong>Apresentações (.pptx):</strong> Pesquisa concorrentes e cria slides
+                                editáveis
+                                "80% prontos".</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-emerald-400">●</span>
+                            <span><strong>Relatórios Complexos:</strong> Consolida web, arquivos e dados em
+                                documentos
+                                finais.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-emerald-400">●</span>
+                            <span><strong>Kits de Artefatos:</strong> Entrega pacotes completos (PPTX + Excel + Doc
+                                de
+                                Análise) em um só job.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 03: Agent Mode Examples -->
+    <section id="agent" class="py-32 px-6 relative">
+        <div class="max-w-6xl mx-auto">
+            <div class="reveal-section mb-16">
+                <h2 class="text-4xl md:text-6xl font-black mb-6 text-white tracking-tight">
+                    <span class="text-emerald-500">03.</span> Agent Mode<br>
+                    <span class="gradient-text">Execução Autônoma</span>
+                </h2>
+                <p class="text-slate-400 text-lg">Exemplos reais de como o Agent orquestra tarefas do início ao fim.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Use Case 1 -->
+                <div
+                    class="group glass-card p-10 rounded-[3rem] hover:border-indigo-500/30 transition-all duration-500 reveal-section">
+                    <span
+                        class="inline-block px-4 py-1.5 rounded-full bg-indigo-500/20 text-[10px] font-black uppercase tracking-widest mb-6 text-indigo-300 border border-indigo-500/30">Pesquisa</span>
+                    <h4 class="text-xl font-bold mb-4 text-white">Análise de Competidores</h4>
+                    <p class="text-sm text-slate-500 mb-6 font-mono bg-black/30 p-4 rounded-xl border border-white/5">
+                        "Analise nossos 3 principais concorrentes e crie um slide deck resumindo forças."</p>
+                    <ul class="space-y-3 text-sm text-slate-300">
+                        <li class="flex items-center gap-3"><span class="text-emerald-400">✓</span> Visita sites
+                        </li>
+                        <li class="flex items-center gap-3"><span class="text-emerald-400">✓</span> Sintetiza dados
+                        </li>
+                        <li class="flex items-center gap-3"><span class="text-emerald-400">✓</span>
+                            <strong>Output:</strong> PPTX Editável
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Use Case 2 -->
+                <div
+                    class="group glass-card p-10 rounded-[3rem] hover:border-indigo-500/30 transition-all duration-500 reveal-section">
+                    <span
+                        class="inline-block px-4 py-1.5 rounded-full bg-purple-500/20 text-[10px] font-black uppercase tracking-widest mb-6 text-purple-300 border border-purple-500/30">Dados</span>
+                    <h4 class="text-xl font-bold mb-4 text-white">Relatório de Vendas</h4>
+                    <p class="text-sm text-slate-500 mb-6 font-mono bg-black/30 p-4 rounded-xl border border-white/5">
+                        "Baixe o CSV, calcule crescimento e gere gráficos."</p>
+                    <ul class="space-y-3 text-sm text-slate-300">
+                        <li class="flex items-center gap-3"><span class="text-emerald-400">✓</span> Baixa CSV</li>
+                        <li class="flex items-center gap-3"><span class="text-emerald-400">✓</span> Python Data
+                            Analysis
+                        </li>
+                        <li class="flex items-center gap-3"><span class="text-emerald-400">✓</span>
+                            <strong>Output:</strong> Relatório PDF
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Use Case 3 -->
+                <div
+                    class="group glass-card p-10 rounded-[3rem] hover:border-indigo-500/30 transition-all duration-500 reveal-section">
+                    <span
+                        class="inline-block px-4 py-1.5 rounded-full bg-pink-500/20 text-[10px] font-black uppercase tracking-widest mb-6 text-pink-300 border border-pink-500/30">Produtividade</span>
+                    <h4 class="text-xl font-bold mb-4 text-white">Reuniões</h4>
+                    <p class="text-sm text-slate-500 mb-6 font-mono bg-black/30 p-4 rounded-xl border border-white/5">
+                        "Prepare para a reunião com a Acme Corp lendo meu calendário."</p>
+                    <ul class="space-y-3 text-sm text-slate-300">
+                        <li class="flex items-center gap-3"><span class="text-emerald-400">✓</span> Lê Calendar</li>
+                        <li class="flex items-center gap-3"><span class="text-emerald-400">✓</span> Pesquisa
+                            notícias
+                        </li>
+                        <li class="flex items-center gap-3"><span class="text-emerald-400">✓</span>
+                            <strong>Output:</strong> Briefing
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Use Case 4 -->
+                <div
+                    class="group glass-card p-10 rounded-[3rem] hover:border-indigo-500/30 transition-all duration-500 reveal-section">
+                    <span
+                        class="inline-block px-4 py-1.5 rounded-full bg-rose-500/20 text-[10px] font-black uppercase tracking-widest mb-6 text-rose-300 border border-rose-500/30">Automação</span>
+                    <h4 class="text-xl font-bold mb-4 text-white">Ação Real</h4>
+                    <p class="text-sm text-slate-500 mb-6 font-mono bg-black/30 p-4 rounded-xl border border-white/5">
+                        "Compre insumos para café da manhã japonês."</p>
+                    <ul class="space-y-3 text-sm text-slate-300">
+                        <li class="flex items-center gap-3"><span class="text-emerald-400">✓</span> Lista itens</li>
+                        <li class="flex items-center gap-3"><span class="text-emerald-400">✓</span> Busca e-commerce
+                        </li>
+                        <li class="flex items-center gap-3"><span class="text-yellow-400">⚠</span>
+                            <strong>Ação:</strong> Aguarda aprovação
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 04: Models Comparison (UPDATED) -->
+    <section id="models" class="py-32 px-6 relative bg-white/5">
+        <div class="max-w-6xl mx-auto">
+            <div class="reveal-section mb-16">
+                <h2 class="text-4xl md:text-6xl font-black mb-6 text-white tracking-tight">
+                    <span class="text-rose-500">04.</span> Modelos<br>
+                    <span class="gradient-text">O Ecossistema 2025</span>
+                </h2>
+                <p class="text-slate-400 text-lg">Especificações técnicas do GPT-5.1, o4-mini e mais.</p>
+            </div>
+
+            <!-- Carousel / Grid of Models -->
+            <div class="flex flex-col gap-6">
+
+                <!-- GPT-5.1 Highlight -->
+                <div
+                    class="glass-card p-8 md:p-12 rounded-[3rem] border border-indigo-500/30 relative overflow-hidden reveal-scale">
+                    <div class="absolute inset-0 bg-indigo-500/5"></div>
+                    <div class="relative z-10 flex flex-col md:flex-row gap-8 items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-4 mb-4">
+                                <span
+                                    class="px-3 py-1 bg-indigo-500 text-white text-xs font-bold rounded-full uppercase tracking-widest">Flagship</span>
+                                <h3 class="text-4xl font-black text-white">GPT-5.1</h3>
+                            </div>
+                            <p class="text-slate-300 text-lg mb-6 leading-relaxed">
+                                A evolução direta do GPT-5 focado em <strong class="text-white">UX e
+                                    Personalização</strong>.
+                                Possui 400K de contexto e Modos Adaptativos (Instant vs Thinking) para equilibrar
+                                custo
+                                e inteligência.
+                            </p>
+                            <div class="flex flex-wrap gap-3">
+                                <span
+                                    class="px-3 py-1.5 rounded-lg bg-black/40 border border-white/10 text-xs text-indigo-300 font-mono">Contexto:
+                                    400k</span>
+                                <span
+                                    class="px-3 py-1.5 rounded-lg bg-black/40 border border-white/10 text-xs text-indigo-300 font-mono">Preço:
+                                    $1.25/1M Input</span>
+                            </div>
+                        </div>
+                        <div class="w-full md:w-1/3 bg-black/40 p-6 rounded-2xl border border-white/10">
+                            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Melhor Uso
+                            </h4>
+                            <ul class="space-y-3 text-sm text-slate-300">
+                                <li class="flex gap-2"><span>🚀</span> Fluxos longos de trabalho</li>
+                                <li class="flex gap-2"><span>👥</span> Projetos User-Centric</li>
+                                <li class="flex gap-2"><span>⚖️</span> Equilíbrio Velocidade/Profundidade</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Models Grid -->
+                <div class="grid md:grid-cols-3 gap-6">
+                    <!-- GPT-5 -->
+                    <div class="glass-card p-8 rounded-[2rem] reveal-section hover:bg-white/10 transition-colors">
+                        <h4 class="text-xl font-black text-white mb-2">GPT-5</h4>
+                        <p class="text-emerald-400 text-xs font-bold uppercase tracking-widest mb-4">O Unificado</p>
+                        <p class="text-sm text-slate-400 mb-4">
+                            Primeiro modelo com "roteador interno" que decide entre resposta rápida ou <em
+                                class="text-white">Thinking Mode</em> complexo. Top de linha em coding e benchmarks
+                            AIME.
+                        </p>
+                        <div class="mt-auto pt-4 border-t border-white/5 flex justify-between text-xs text-slate-500">
+                            <span>400k Context</span>
+                            <span>Agent Core</span>
+                        </div>
+                    </div>
+
+                    <!-- o4-mini -->
+                    <div class="glass-card p-8 rounded-[2rem] reveal-section hover:bg-white/10 transition-colors">
+                        <h4 class="text-xl font-black text-white mb-2">o4-mini</h4>
+                        <p class="text-blue-400 text-xs font-bold uppercase tracking-widest mb-4">Raciocínio Barato
+                        </p>
+                        <p class="text-sm text-slate-400 mb-4">
+                            Família "o-series" acessível. Raciocínio forte para matemática e lógica com custo muito
+                            menor ($1.10/Input). Ideal para automação em volume.
+                        </p>
+                        <div class="mt-auto pt-4 border-t border-white/5 flex justify-between text-xs text-slate-500">
+                            <span>200k Context</span>
+                            <span>High Volume</span>
+                        </div>
+                    </div>
+
+                    <!-- o3 -->
+                    <div class="glass-card p-8 rounded-[2rem] reveal-section hover:bg-white/10 transition-colors">
+                        <h4 class="text-xl font-black text-white mb-2">o3</h4>
+                        <p class="text-rose-400 text-xs font-bold uppercase tracking-widest mb-4">Thinking Puro</p>
+                        <p class="text-sm text-slate-400 mb-4">
+                            O "teto" de capacidade. Muito lento e caro, mas imbatível para STEM, provas e puzzles
+                            complexos onde o tempo de resposta não importa.
+                        </p>
+                        <div class="mt-auto pt-4 border-t border-white/5 flex justify-between text-xs text-slate-500">
+                            <span>Deep Logic</span>
+                            <span>High Latency</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Verdict Section -->
+    <section class="py-32 px-6 relative overflow-hidden">
+        <div class="max-w-5xl mx-auto">
+            <div class="relative rounded-[3rem] p-16 overflow-hidden reveal-scale">
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600">
+                </div>
+                <div
+                    class="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.3),transparent_50%)]">
+                </div>
+
+                <div class="relative z-10">
+                    <h2 class="text-5xl md:text-6xl font-black mb-10 text-white">Conclusão</h2>
+                    <div class="space-y-6 text-white/90 text-xl leading-relaxed">
+                        <p>A multimodalidade não é apenas sobre "aceitar arquivos", mas sobre <strong
+                                class="text-white">entender o mundo</strong> através de diversas lentes (texto,
+                            código,
+                            imagem, áudio).</p>
+                        <p class="text-white/70">
+                            Com a chegada do <strong>Modo Agent</strong>, cruzamos a fronteira de assistentes
+                            que
+                            "falam" para assistentes que <strong>fazem</strong>.
+                        </p>
+                        <p class="text-3xl font-bold text-emerald-300 pt-4">
+                            Em 2025, saber orquestrar esses agentes será a habilidade definidora de
+                            produtividade.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Footer -->
+    <footer class="py-20 px-6 border-t border-white/10">
+        <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 text-slate-500">
+            <div class="reveal-section">
+                <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Metodologia
+                </h4>
+                <p class="text-xs leading-relaxed">Análise baseada na documentação oficial da OpenAI (Dez
+                    2025),
+                    technical papers sobre arquitetura GPT-5 e relatórios de benchmark de performance
+                    agentic.</p>
+            </div>
+            <div class="reveal-section" style="transition-delay: 0.1s;">
+                <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Fontes</h4>
+                <p class="text-xs leading-relaxed italic">OpenAI Help Center, OpenAI API Documentation,
+                    SpreadsheetBench, MMMU Benchmark Results.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Logo Final -->
+    <div class="pb-24 pt-12 flex flex-col justify-center items-center gap-4">
+        <img src="assets/img/AYA.png" alt="AYA Logo" class="h-20 opacity-80" style="filter: brightness(0) invert(1);">
+        <p class="text-sm font-bold uppercase tracking-[0.4em] text-slate-500">The future is intelligence
+        </p>
+    </div>
+
+    <!-- Fixed Bottom Bar -->
+    <div
+        class="fixed bottom-0 left-0 w-full bg-black/80 backdrop-blur-md py-4 text-[9px] text-slate-500 font-bold uppercase tracking-[0.5em] text-center z-50 border-t border-white/5">
+        Este documento é uma análise técnica independente • Powered by AYA
+    </div>
+
+    <script>
+        // Initialize Lenis smooth scroll
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            orientation: 'vertical',
+            gestureOrientation: 'vertical',
+            smoothWheel: true,
+            wheelMultiplier: 1,
+            touchMultiplier: 2,
+            infinite: false,
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // Connect Lenis to GSAP ScrollTrigger
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => {
+            lenis.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
+
+        // Register ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Progress bar animation
+        gsap.to('.progress-bar', {
+            scaleX: 1,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: 'body',
+                start: 'top top',
+                end: 'bottom bottom',
+                scrub: 0.3
+            }
+        });
+
+        // Custom cursor
+        const cursor = document.querySelector('.custom-cursor');
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateCursor() {
+            cursorX += (mouseX - cursorX) * 0.1;
+            cursorY += (mouseY - cursorY) * 0.1;
+            cursor.style.left = cursorX - 10 + 'px';
+            cursor.style.top = cursorY - 10 + 'px';
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Hover effect for cursor
+        document.querySelectorAll('a, button, .glass-card, .magnetic-btn').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // Hero animations
+        const heroTl = gsap.timeline();
+
+        heroTl
+            .from('.floating-badge', {
+                opacity: 0,
+                y: 50,
+                duration: 1,
+                ease: 'power3.out'
+            })
+            .from('.hero-title span', {
+                opacity: 0,
+                y: 100,
+                rotationX: -90,
+                stagger: 0.2,
+                duration: 1.2,
+                ease: 'power4.out'
+            }, '-=0.5')
+            .to('.hero-subtitle', {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: 'power3.out'
+            }, '-=0.5');
+
+        // Reveal animations for sections
+        gsap.utils.toArray('.reveal-section').forEach((section, i) => {
+            gsap.to(section, {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: section,
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                }
+            });
+        });
+
+        // Reveal left animations
+        gsap.utils.toArray('.reveal-left').forEach(el => {
+            gsap.to(el, {
+                opacity: 1,
+                x: 0,
+                duration: 1.2,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top 80%',
+                    toggleActions: 'play none none reverse'
+                }
+            });
+        });
+
+        // Reveal right animations
+        gsap.utils.toArray('.reveal-right').forEach(el => {
+            gsap.to(el, {
+                opacity: 1,
+                x: 0,
+                duration: 1.2,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top 80%',
+                    toggleActions: 'play none none reverse'
+                }
+            });
+        });
+
+        // Reveal scale animations
+        gsap.utils.toArray('.reveal-scale').forEach(el => {
+            gsap.to(el, {
+                opacity: 1,
+                scale: 1,
+                duration: 1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                }
+            });
+        });
+
+        // Counter animation
+        gsap.utils.toArray('.counter').forEach(counter => {
+            const target = parseFloat(counter.dataset.target);
+            const isDecimal = counter.dataset.decimal === 'true';
+
+            ScrollTrigger.create({
+                trigger: counter,
+                start: 'top 85%',
+                onEnter: () => {
+                    gsap.to(counter, {
+                        innerText: target,
+                        duration: 2,
+                        ease: 'power2.out',
+                        snap: { innerText: isDecimal ? 0.01 : 1 },
+                        onUpdate: function () {
+                            if (isDecimal) {
+                                counter.innerText = parseFloat(counter.innerText).toFixed(2).replace('.', ',');
+                            }
+                        }
+                    });
+                },
+                once: true
+            });
+        });
+
+        // Parallax effect for background orbs
+        gsap.utils.toArray('.animate-pulse').forEach((orb, i) => {
+            gsap.to(orb, {
+                y: -100 * (i + 1),
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: 'header',
+                    start: 'top top',
+                    end: 'bottom top',
+                    scrub: 1
+                }
+            });
+        });
+
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+
+                gsap.to(particle, {
+                    y: -window.innerHeight,
+                    x: (Math.random() - 0.5) * 200,
+                    opacity: 0,
+                    duration: 10 + Math.random() * 10,
+                    repeat: -1,
+                    ease: 'none',
+                    delay: Math.random() * 10
+                });
+            }
+        }
+        createParticles();
+
+        // Magnetic button effect
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+
+                gsap.to(card, {
+                    x: x * 0.05,
+                    y: y * 0.05,
+                    duration: 0.5,
+                    ease: 'power2.out'
+                });
+            });
+
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, {
+                    x: 0,
+                    y: 0,
+                    duration: 0.5,
+                    ease: 'power2.out'
+                });
+            });
+        });
+
+        // Scroll indicator fade out
+        gsap.to('.scroll-indicator', {
+            opacity: 0,
+            y: 20,
+            scrollTrigger: {
+                trigger: 'header',
+                start: 'top top',
+                end: '30% top',
+                scrub: 1
+            }
+        });
+
+        // Hide custom cursor on mobile
+        if ('ontouchstart' in window) {
+            cursor.style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>

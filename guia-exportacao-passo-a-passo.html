@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passo a Passo: Exportação de Dados em IAs | AYA Central</title>
+
+    <!-- Design System: TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+
+    <!-- Core Styles -->
+    <style>
+        /* [CORE] Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html.lenis,
+        html.lenis body {
+            height: auto;
+        }
+
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+            /* Gray 950 */
+            color: #f8fafc;
+            /* Slate 50 */
+            overflow-x: hidden;
+            cursor: none;
+            /* Custom cursor override */
+        }
+
+        /* [CORE] Custom Cursor */
+        .custom-cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(99, 102, 241, 0.8);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.15s ease-out, width 0.2s, height 0.2s;
+        }
+
+        .custom-cursor.hover {
+            width: 50px;
+            height: 50px;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        /* [CORE] Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899);
+            z-index: 9999;
+            transform-origin: left;
+            transform: scaleX(0);
+        }
+
+        /* [DESIGN] Glassmorphism Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            /* White/8% */
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(99, 102, 241, 0.3);
+            /* Indigo border on hover */
+            transform: translateY(-5px);
+        }
+
+        /* [DESIGN] Gradients */
+        .hero-gradient {
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.3), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(139, 92, 246, 0.15), transparent);
+            pointer-events: none;
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #818cf8, #c084fc, #f472b6);
+            /* Indigo-Purple-Pink */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* [ANIMATIONS] Initial States for GSAP */
+        .reveal-section,
+        .reveal-left,
+        .reveal-right,
+        .reveal-scale {
+            opacity: 0;
+        }
+
+        .reveal-left {
+            transform: translateX(-50px);
+        }
+
+        .reveal-right {
+            transform: translateX(50px);
+        }
+
+        .reveal-scale {
+            transform: scale(0.95);
+        }
+
+        /* Lists */
+        .step-list {
+            counter-reset: step-counter;
+        }
+
+        .step-list li {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-list li::before {
+            counter-increment: step-counter;
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1.5rem;
+            height: 1.5rem;
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-indigo-500/30">
+
+    <!-- [COMPONENT] Custom Cursor -->
+    <div class="custom-cursor hidden md:block"></div>
+    <div class="progress-bar"></div>
+
+    <!-- [LAYOUT] Header / Navigation -->
+    <header class="fixed top-0 left-0 w-full p-6 z-50 flex justify-between items-center mix-blend-difference">
+        <a href="exportacao-dados-ia.html"
+            class="magnetic-btn flex items-center gap-2 text-sm font-bold tracking-widest uppercase hover:text-indigo-400 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Voltar para Análise
+        </a>
+    </header>
+
+    <!-- [SECTION] Hero -->
+    <section class="min-h-[60vh] relative flex items-center justify-center p-6 hero-gradient overflow-hidden">
+        <!-- Floating particles container -->
+        <div id="particles" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-7xl mx-auto w-full text-center">
+            <!-- Badge -->
+            <div class="floating-badge mb-8">
+                <img src="assets/img/AYA.png" alt="AYA"
+                    class="h-16 w-auto mx-auto hero-glow opacity-90 rounded-2xl p-2 bg-white/5 backdrop-blur-md border border-white/10">
+            </div>
+
+            <!-- Title -->
+            <h1 class="hero-title text-4xl md:text-7xl font-black mb-6 leading-[0.9] tracking-tight">
+                <span class="block text-white">Guia Passo a Passo</span>
+                <span class="block gradient-text mt-2">Como Exportar Seus Dados</span>
+            </h1>
+
+            <p
+                class="hero-subtitle text-lg md:text-xl text-slate-400 max-w-3xl mx-auto font-light leading-relaxed mb-10 opacity-0">
+                Tutorial completo para extrair seu histórico do Claude, ChatGPT, DeepSeek, Mistral, Perplexity e outros.
+            </p>
+        </div>
+    </section>
+
+    <!-- [COMPONENT] Mini Navigation -->
+    <div class="max-w-6xl mx-auto -mt-10 px-6 relative z-30 mb-20">
+        <div
+            class="glass-card p-4 rounded-2xl border border-white/10 flex flex-wrap justify-center gap-4 shadow-2xl backdrop-blur-xl">
+            <a href="#claude"
+                class="px-4 py-2 rounded-lg hover:bg-white/5 text-sm font-bold text-slate-300 hover:text-indigo-300 transition-colors">Claude</a>
+            <a href="#chatgpt"
+                class="px-4 py-2 rounded-lg hover:bg-white/5 text-sm font-bold text-slate-300 hover:text-emerald-300 transition-colors">ChatGPT</a>
+            <a href="#deepseek"
+                class="px-4 py-2 rounded-lg hover:bg-white/5 text-sm font-bold text-slate-300 hover:text-blue-300 transition-colors">DeepSeek</a>
+            <a href="#mistral"
+                class="px-4 py-2 rounded-lg hover:bg-white/5 text-sm font-bold text-slate-300 hover:text-purple-300 transition-colors">Mistral</a>
+            <a href="#perplexity"
+                class="px-4 py-2 rounded-lg hover:bg-white/5 text-sm font-bold text-slate-300 hover:text-cyan-300 transition-colors">Perplexity</a>
+        </div>
+    </div>
+
+    <!-- [CONTENT] Guides -->
+    <div class="max-w-4xl mx-auto px-6 pb-32 space-y-24">
+
+        <!-- 1. Claude -->
+        <section id="claude" class="reveal-section">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-4xl">🛡️</span>
+                <h2 class="text-3xl font-bold text-white">Claude (Anthropic)</h2>
+            </div>
+
+            <div class="glass-card p-8 rounded-3xl mb-8 border-l-4 border-l-indigo-500">
+                <h3 class="text-xl font-bold text-white mb-6">Método Oficial (Via Email)</h3>
+                <p class="text-sm text-slate-400 mb-6">Este é o método mais direto para exportar <strong>TUDO</strong>
+                    de uma vez.</p>
+                <ol class="step-list text-slate-300 text-sm space-y-2">
+                    <li>Acesse Claude e clique nas suas iniciais no <strong>canto inferior esquerdo</strong>.</li>
+                    <li>Selecione <strong>"Settings"</strong> do menu suspenso.</li>
+                    <li>Navegue até a seção <strong>"Privacy"</strong>.</li>
+                    <li>Procure por <strong>"Export Data"</strong> e clique no botão Export.</li>
+                    <li>Uma janela de confirmação aparecerá. Clique em <strong>"Confirm Export"</strong>.</li>
+                    <li>Você receberá um email com o assunto <strong>"Claude - Your Data Export is Ready"</strong>.
+                        <span class="text-amber-400">⚠️ Link válido por 24h.</span></li>
+                    <li>Abra o email e clique em <strong>"Download Data Export"</strong>.</li>
+                    <li>Extraia o arquivo ZIP para acessar os JSONs.</li>
+                </ol>
+            </div>
+
+            <div class="glass-card p-8 rounded-3xl opacity-80 hover:opacity-100 transition-opacity">
+                <h3 class="text-lg font-bold text-white mb-4">Alternativa: Extensão (PDF/MD)</h3>
+                <p class="text-sm text-slate-400 mb-4">Para exportar conversas específicas.</p>
+                <ol class="step-list text-slate-300 text-xs space-y-2">
+                    <li>Instale a extensão <strong>"Claude Exporter"</strong> da Chrome Web Store.</li>
+                    <li>Abra a conversa que deseja exportar.</li>
+                    <li>Clique no ícone da extensão e escolha o formato (PDF, Markdown, HTML).</li>
+                    <li>O download iniciará automaticamente.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- 2. ChatGPT -->
+        <section id="chatgpt" class="reveal-section">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-4xl">🤖</span>
+                <h2 class="text-3xl font-bold text-white">ChatGPT (OpenAI)</h2>
+            </div>
+
+            <div class="glass-card p-8 rounded-3xl mb-8 border-l-4 border-l-emerald-500">
+                <h3 class="text-xl font-bold text-white mb-6">Método Nativo Oficial</h3>
+                <p class="text-sm text-slate-400 mb-6">Exporta <strong>TODO</strong> o histórico em JSON/HTML.</p>
+                <ol class="step-list text-slate-300 text-sm space-y-2">
+                    <li>Abra o ChatGPT e clique no seu perfil (canto inferior esquerdo).</li>
+                    <li>Selecione <strong>"Settings"</strong> > <strong>"Data Controls"</strong>.</li>
+                    <li>Localize <strong>"Export Data"</strong> e clique em <strong>"Export"</strong>.</li>
+                    <li>Confirme a solicitação em <strong>"Confirm Export"</strong>.</li>
+                    <li>Aguarde o email <strong>"ChatGPT - Your Data Export is Ready"</strong>. <span
+                            class="text-amber-400">⚠️ Link válido por 24h.</span></li>
+                    <li>Baixe o ZIP e abra o arquivo <strong>chat.html</strong> para visualizar.</li>
+                </ol>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="glass-card p-6 rounded-3xl opacity-80 hover:opacity-100 transition-opacity">
+                    <h3 class="text-lg font-bold text-white mb-2">Via Extensão</h3>
+                    <p class="text-xs text-slate-400 mb-4">Para PDF/MD Individuais</p>
+                    <ol class="step-list text-slate-300 text-xs space-y-2">
+                        <li>Instale <strong>"ChatGPT Exporter"</strong>.</li>
+                        <li>Abra a conversa e clique nos três pontos (...).</li>
+                        <li>Selecione <strong>"Export Conversation"</strong>.</li>
+                        <li>Escolha TXT, JSON, MD ou PDF.</li>
+                    </ol>
+                </div>
+                <div class="glass-card p-6 rounded-3xl opacity-80 hover:opacity-100 transition-opacity">
+                    <h3 class="text-lg font-bold text-white mb-2">Em Lote (Bulk)</h3>
+                    <p class="text-xs text-slate-400 mb-4">Várias conversas de uma vez</p>
+                    <ol class="step-list text-slate-300 text-xs space-y-2">
+                        <li>Instale <strong>"ChatGPT Toolbox"</strong>.</li>
+                        <li>Ative o "Selection Mode".</li>
+                        <li>Marque os chats desejados.</li>
+                        <li>Clique em <strong>"Bulk Export"</strong> e escolha o formato.</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. DeepSeek -->
+        <section id="deepseek" class="reveal-section">
+            <div class="flex items-center gap-4 mb-8">
+                <span class="text-4xl">🐋</span>
+                <h2 class="text-3xl font-bold text-white">DeepSeek</h2>
+            </div>
+
+            <div class="glass-card p-8 rounded-3xl border-l-4 border-l-blue-600">
+                <h3 class="text-xl font-bold text-white mb-6">Passo a Passo Oficial</h3>
+                <p class="text-sm text-slate-400 mb-6">Download imediato do JSON completo.</p>
+                <ol class="step-list text-slate-300 text-sm space-y-2">
+                    <li>Acesse DeepSeek e faça login.</li>
+                    <li>Vá em <strong>Configurações (Profile)</strong> > aba <strong>Data</strong>.</li>
+                    <li>Clique em <strong>"Export Data"</strong>.</li>
+                    <li>Baixe o ZIP imediatamente.</li>
+                    <li>Procure pelo arquivo <strong>conversations.json</strong>.</li>
+                </ol>
+                <div class="mt-4 p-4 bg-orange-500/10 rounded-xl border border-orange-500/20 text-xs text-orange-300">
+                    ⚠️ Importante: O link expira em 7 dias. Baixe imediatamente.
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Mistral & Perplexity -->
+        <div class="grid md:grid-cols-2 gap-8">
+            <section id="mistral" class="reveal-section">
+                <div class="glass-card p-8 rounded-3xl h-full border-t-4 border-t-purple-500">
+                    <h2 class="text-2xl font-bold text-white mb-6">Mistral AI</h2>
+                    <p class="text-xs text-slate-400 mb-4 tracking-widest uppercase">GDPR Compliance</p>
+                    <ol class="step-list text-slate-300 text-sm space-y-4">
+                        <li>Acesse <strong>Account Settings</strong> > <strong>Data Portability</strong>.</li>
+                        <li>Clique em <strong>Request Data Export</strong>.</li>
+                        <li>Aguarde o link por email.</li>
+                        <li>Escolha entre Markdown, PDF, HTML ou JSON.</li>
+                    </ol>
+                </div>
+            </section>
+
+            <section id="perplexity" class="reveal-section" style="transition-delay: 0.1s;">
+                <div class="glass-card p-8 rounded-3xl h-full border-t-4 border-t-cyan-500">
+                    <h2 class="text-2xl font-bold text-white mb-6">Perplexity</h2>
+                    <p class="text-xs text-slate-400 mb-4 tracking-widest uppercase">Export Individual</p>
+                    <ol class="step-list text-slate-300 text-sm space-y-4">
+                        <li>Abra um Thread.</li>
+                        <li>Em uma resposta, clique no ícone <strong>Export</strong>.</li>
+                        <li>Escolha PDF, Markdown ou DOCX.</li>
+                        <li>Para exportar tudo, use o script npm <code>perplexport</code> ou extensão "Save my Chatbot".
+                        </li>
+                    </ol>
+                </div>
+            </section>
+        </div>
+
+        <!-- 5. Others -->
+        <section class="reveal-section bg-white/5 rounded-3xl p-8">
+            <h2 class="text-xl font-bold text-white mb-6">Outras Plataformas</h2>
+            <div class="grid md:grid-cols-2 gap-8 text-sm">
+                <div>
+                    <strong class="text-orange-400 block mb-2">Genspark</strong>
+                    <p class="text-slate-400">Sem nativo. Use a extensão Chrome <strong>"Genspark Conversation
+                            Manager"</strong> para baixar JSON/TXT.</p>
+                </div>
+                <div>
+                    <strong class="text-blue-400 block mb-2">Microsoft Copilot</strong>
+                    <p class="text-slate-400">Apenas respostas individuais. Clique no ícone de "Compartilhar/Exportar"
+                        em cada resposta para Word/PDF.</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- [LAYOUT] Footer -->
+    <footer class="py-20 px-6 border-t border-white/10 text-center">
+        <p class="text-slate-500 text-xs">AYA Knowledge Base • 2025</p>
+    </footer>
+
+    <!-- [LOGIC] Scripts -->
+    <script>
+        // 1. Initialize Smooth Scroll (Lenis)
+        const lenis = new Lenis({ duration: 1.2, smoothWheel: true });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+
+        // Integrar Lenis com GSAP ScrollTrigger
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+
+        // 2. Register GSAP Plugins
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 3. Global Animations
+        gsap.to('.progress-bar', {
+            scaleX: 1, ease: 'none',
+            scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 0.3 }
+        });
+
+        gsap.utils.toArray('.reveal-section').forEach((el) => {
+            gsap.to(el, {
+                opacity: 1, y: 0, duration: 1, ease: 'power3.out',
+                scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none reverse' }
+            });
+        });
+
+        const heroTl = gsap.timeline();
+        heroTl.from('.floating-badge', { y: 50, opacity: 0, duration: 1 })
+            .from('.hero-title span', { y: 100, opacity: 0, stagger: 0.2, duration: 1.2, ease: 'power4.out' }, '-=0.5')
+            .to('.hero-subtitle', { opacity: 1, y: 0, duration: 1 }, '-=0.5');
+
+        // 4. Custom Cursor
+        const cursor = document.querySelector('.custom-cursor');
+        let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
+        document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+        function animateCursor() {
+            cursorX += (mouseX - cursorX) * 0.1; cursorY += (mouseY - cursorY) * 0.1;
+            cursor.style.left = (cursorX - 10) + 'px'; cursor.style.top = (cursorY - 10) + 'px';
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Particles
+        const particlesContainer = document.getElementById('particles');
+        if (particlesContainer) {
+            const particleCount = 20;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle', 'absolute', 'w-1', 'h-1', 'bg-indigo-500/30', 'rounded-full');
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animation = `float ${10 + Math.random() * 20}s linear infinite`;
+                particlesContainer.appendChild(particle);
+
+                gsap.to(particle, {
+                    y: -100 - Math.random() * 200,
+                    x: (Math.random() - 0.5) * 100,
+                    duration: 10 + Math.random() * 20,
+                    repeat: -1,
+                    ease: 'none',
+                });
+            }
+        }
+
+        document.querySelectorAll('a, button, .glass-card').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+    </script>
+</body>
+
+</html>

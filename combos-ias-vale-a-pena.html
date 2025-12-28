@@ -137,226 +137,34 @@
             transform: translateZ(0);
         }
 
-        /* GPU acceleration for animated orbs */
-        .animate-pulse {
-            will-change: opacity;
-            transform: translateZ(0);
-            backface-visibility: hidden;
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+            /* Gray 950 */
+            color: #f8fafc;
+            /* Slate 50 */
+            overflow-x: hidden;
+            cursor: none;
+            /* User requested to hide cursor */
         }
 
-        /* Reduce animations for users who prefer reduced motion */
-        @media (prefers-reduced-motion: reduce) {
-
-            .gradient-text,
-            .particle,
-            .animate-pulse,
-            .floating-badge {
-                animation: none !important;
-            }
-        }
-
-        /* Section reveal */
-        .reveal-section {
-            opacity: 0;
-            transform: translateY(100px);
-        }
-
-        .reveal-left {
-            opacity: 0;
-            transform: translateX(-100px);
-        }
-
-        .reveal-right {
-            opacity: 0;
-            transform: translateX(100px);
-        }
-
-        .reveal-scale {
-            opacity: 0;
-            transform: scale(0.8);
-        }
-
-        /* Split text */
-        .split-char {
-            display: inline-block;
-            opacity: 0;
-            transform: translateY(100%);
-        }
-
-        .split-word {
-            display: inline-block;
-            overflow: hidden;
-        }
-
-        /* Magnetic button */
-        .magnetic-btn {
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        .magnetic-btn::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
-            transform: translateX(-100%);
-            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        .magnetic-btn:hover::before {
-            transform: translateX(0);
-        }
-
-        /* Glow effect */
-        .glow {
-            box-shadow:
-                0 0 20px rgba(99, 102, 241, 0.3),
-                0 0 40px rgba(99, 102, 241, 0.2),
-                0 0 60px rgba(99, 102, 241, 0.1);
-        }
-
-        /* Counter animation */
-        .counter {
-            font-variant-numeric: tabular-nums;
-        }
-
-        /* Horizontal scroll section */
-        .horizontal-scroll {
-            display: flex;
-            flex-wrap: nowrap;
-            gap: 2rem;
-        }
-
-        .horizontal-scroll-item {
-            flex: 0 0 auto;
-            width: 400px;
-        }
-
-        /* Floating badges */
-        .floating-badge {
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0) rotate(0deg);
-            }
-
-            25% {
-                transform: translateY(-10px) rotate(2deg);
-            }
-
-            75% {
-                transform: translateY(5px) rotate(-2deg);
-            }
-        }
-
-        /* Noise overlay */
-        .noise-overlay::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-            opacity: 0.03;
+        /* [CORE] Custom Cursor */
+        .custom-cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(139, 92, 246, 0.8);
+            border-radius: 50%;
+            position: fixed;
             pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.15s ease-out, width 0.2s, height 0.2s;
         }
 
-        /* Marquee */
-        .marquee {
-            display: flex;
-            overflow: hidden;
-            user-select: none;
-        }
-
-        .marquee-content {
-            flex-shrink: 0;
-            display: flex;
-            gap: 4rem;
-            animation: marquee 30s linear infinite;
-        }
-
-        @keyframes marquee {
-            from {
-                transform: translateX(0);
-            }
-
-            to {
-                transform: translateX(-100%);
-            }
-        }
-
-        /* Number counter glow */
-        .stat-glow {
-            text-shadow:
-                0 0 10px rgba(16, 185, 129, 0.5),
-                0 0 20px rgba(16, 185, 129, 0.3),
-                0 0 30px rgba(16, 185, 129, 0.2);
-        }
-
-        /* Scroll indicator */
-        .scroll-indicator {
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-
-            0%,
-            20%,
-            50%,
-            80%,
-            100% {
-                transform: translateY(0);
-            }
-
-            40% {
-                transform: translateY(-20px);
-            }
-
-            60% {
-                transform: translateY(-10px);
-            }
-        }
-
-        /* Table hover effects */
-        .table-row {
-            transition: all 0.3s ease;
-        }
-
-        .table-row:hover {
-            background: rgba(99, 102, 241, 0.05);
-            transform: scale(1.01);
-        }
-
-        /* Badge animations */
-        .badge-pro {
-            @apply bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border border-emerald-500/30;
-        }
-
-        .badge-con {
-            @apply bg-rose-500/20 text-rose-400 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border border-rose-500/30;
-        }
-
-        /* Feature bar animation */
-        .feature-bar {
-            transform-origin: left;
-            transform: scaleX(0);
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(#6366f1, #8b5cf6);
-            border-radius: 3px;
+        .custom-cursor.hover {
+            width: 50px;
+            height: 50px;
+            background: rgba(139, 92, 246, 0.1);
         }
 
         .logo-aya {
@@ -366,72 +174,32 @@
             flex-shrink: 0;
             object-fit: contain;
         }
-
-        /* Responsive hero badge */
-        @media (max-width: 640px) {
-            .floating-badge {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: center;
-            }
-
-            .floating-badge .border-l {
-                border-left: none;
-                border-top: 1px solid rgba(255, 255, 255, 0.2);
-                padding-left: 0;
-                padding-top: 0.75rem;
-            }
-        }
-
-        .logo-aya-footer {
-            filter: brightness(0) invert(1);
-            height: 40px;
-            width: auto;
-            opacity: 0.6;
-        }
-
-        /* Scroll hint animation */
-        .scroll-hint {
-            animation: swipeHint 2s ease-in-out infinite;
-        }
-
-        @keyframes swipeHint {
-
-            0%,
-            100% {
-                transform: translateX(0);
-                opacity: 1;
-            }
-
-            50% {
-                transform: translateX(10px);
-                opacity: 0.5;
-            }
-        }
-
-        .scroll-hint-container {
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .scroll-hint-container {
-                display: flex;
-            }
-        }
     </style>
 </head>
 
-<body class="antialiased">
-    <!-- Custom Cursor -->
-    <div class="custom-cursor"></div>
+<body class="antialiased font-sans bg-gray-900 text-white selection:bg-indigo-500/30">
+    <!-- [COMPONENT] Custom Cursor -->
+    <div class="custom-cursor hidden md:block"></div>
 
-    <!-- Progress Bar -->
-    <div class="progress-bar"></div>
+    <!-- [LAYOUT] Header / Navigation -->
+    <header class="fixed top-0 left-0 w-full p-6 z-50 flex justify-between items-center mix-blend-difference">
+        <a href="index.html"
+            class="magnetic-btn flex items-center gap-2 text-sm font-bold tracking-widest uppercase hover:text-indigo-400 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Voltar
+        </a>
+    </header>
+
+
+
 
     <!-- Hero Section -->
     <header class="hero-gradient min-h-screen flex items-center justify-center relative overflow-hidden noise-overlay">
         <!-- Animated background orbs -->
-        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-[150px] animate-pulse"></div>
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-[150px] animate-pulse">
+        </div>
         <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-500/15 rounded-full blur-[120px] animate-pulse"
             style="animation-delay: 1s;"></div>
         <div class="absolute top-1/2 right-1/3 w-64 h-64 bg-pink-500/10 rounded-full blur-[100px] animate-pulse"
@@ -490,7 +258,8 @@
                                     d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <span class="text-indigo-400 font-bold uppercase text-xs tracking-widest">Economia Anual</span>
+                        <span class="text-indigo-400 font-bold uppercase text-xs tracking-widest">Economia
+                            Anual</span>
                     </div>
                     <h3 class="text-5xl font-black text-white mb-3">
                         R$ <span class="counter" data-target="252">0</span>
@@ -513,7 +282,8 @@
                     <h3 class="text-5xl font-black text-white mb-3">
                         <span class="counter stat-glow" data-target="72">0</span>%
                     </h3>
-                    <p class="text-slate-500 text-sm leading-relaxed">Recursos nativos (GPTs, Memory, Canvas, Artifacts)
+                    <p class="text-slate-500 text-sm leading-relaxed">Recursos nativos (GPTs, Memory, Canvas,
+                        Artifacts)
                         que são perdidos via agregador.</p>
                 </div>
 
@@ -526,7 +296,8 @@
                                 <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <span class="text-rose-400 font-bold uppercase text-xs tracking-widest">Risco de Latência</span>
+                        <span class="text-rose-400 font-bold uppercase text-xs tracking-widest">Risco de
+                            Latência</span>
                     </div>
                     <h3 class="text-5xl font-black text-white mb-3">Alto</h3>
                     <p class="text-slate-500 text-sm leading-relaxed">Arquitetura baseada em filas e paralelismo de
@@ -549,7 +320,8 @@
             <div class="prose prose-invert max-w-none text-slate-400 leading-loose text-xl mb-16 reveal-section">
                 Agregadores como <strong class="text-white">Adapta One</strong> e <strong class="text-white">Inner
                     AI</strong> prometem acesso a múltiplas IAs (GPT-4, Claude 3.5 Sonnet, Gemini Pro) em uma única
-                plataforma por um preço reduzido. No entanto, tecnicamente, eles operam como "proxies" ou revendedores
+                plataforma por um preço reduzido. No entanto, tecnicamente, eles operam como "proxies" ou
+                revendedores
                 de API, muitas vezes sacrificando as camadas de software mais avançadas que os criadores
                 (OpenAI/Anthropic) reservam para suas próprias interfaces.
             </div>
@@ -589,7 +361,8 @@
                 <!-- LLMs Diretas Card -->
                 <div
                     class="reveal-right relative p-10 rounded-[2.5rem] group hover:scale-[1.02] transition-all duration-500 overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800"></div>
+                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800">
+                    </div>
                     <div
                         class="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.2),transparent)]">
                     </div>
@@ -635,7 +408,8 @@
                 <div class="flex items-center gap-6 mb-4">
                     <span
                         class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-2xl font-black text-white shadow-lg shadow-indigo-500/30">02</span>
-                    <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight">Matriz de Comparação Técnica
+                    <h2 class="text-4xl md:text-5xl font-black text-white tracking-tight">Matriz de Comparação
+                        Técnica
                     </h2>
                 </div>
             </div>
@@ -656,7 +430,8 @@
                             <tr>
                                 <th class="px-8 py-6 text-xs font-black uppercase text-slate-400 tracking-widest">
                                     Categoria</th>
-                                <th class="px-8 py-6 text-xs font-black uppercase text-slate-400 tracking-widest">Adapta
+                                <th class="px-8 py-6 text-xs font-black uppercase text-slate-400 tracking-widest">
+                                    Adapta
                                     One / Agregadores</th>
                                 <th class="px-8 py-6 text-xs font-black uppercase text-slate-400 tracking-widest">
                                     ChatGPT Plus / Claude Pro</th>
@@ -756,7 +531,8 @@
                     <div class="relative z-10">
                         <div class="text-4xl mb-4 opacity-30">"</div>
                         <p class="italic text-indigo-100 leading-relaxed text-sm mb-8">
-                            Não ter memória como no ChatGPT é ruim demais. Parece que ele não aprende as coisas direito.
+                            Não ter memória como no ChatGPT é ruim demais. Parece que ele não aprende as coisas
+                            direito.
                             Minha experiência com manipulação de arquivos .docx e .pdf também é negativa.
                         </p>
                         <div class="flex items-center gap-4">
@@ -764,7 +540,8 @@
                                 class="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center text-xs font-bold text-white">
                                 CP</div>
                             <div>
-                                <p class="text-xs font-black text-white uppercase tracking-wide">Consultor Profissional
+                                <p class="text-xs font-black text-white uppercase tracking-wide">Consultor
+                                    Profissional
                                 </p>
                                 <p class="text-[10px] text-indigo-300">Feedback via Reddit</p>
                             </div>
@@ -794,7 +571,8 @@
                 <div class="glass-card p-8 rounded-3xl group hover:border-emerald-500/30 transition-all duration-500">
                     <div class="text-4xl mb-4 opacity-20 group-hover:opacity-40 transition-opacity">"</div>
                     <p class="italic text-slate-400 leading-relaxed text-sm mb-8">
-                        Nenhum dos modelos tem capacidade de gerar arquivos. O ChatGPT gratuito faz isso e me auxilia
+                        Nenhum dos modelos tem capacidade de gerar arquivos. O ChatGPT gratuito faz isso e me
+                        auxilia
                         demais no trabalho.
                     </p>
                     <div class="flex items-center gap-4">
@@ -814,7 +592,8 @@
                     <div class="relative z-10">
                         <div class="text-4xl mb-4 opacity-30">"</div>
                         <p class="italic text-rose-100 leading-relaxed text-sm mb-8">
-                            Limite de 5 arquivos por chat. Tentei analisar alguns textos para fazer referência cruzada e
+                            Limite de 5 arquivos por chat. Tentei analisar alguns textos para fazer referência
+                            cruzada e
                             aí tem este limite.
                         </p>
                         <div class="flex items-center gap-4">
@@ -859,13 +638,15 @@
                         <div
                             class="p-5 bg-rose-500/10 rounded-2xl text-sm flex flex-col gap-3 border border-rose-500/20">
                             <span class="badge-con self-start">Agregador</span>
-                            <span class="text-rose-300 italic">Incapaz de acessar interpretador Python nativo. Não gera
+                            <span class="text-rose-300 italic">Incapaz de acessar interpretador Python nativo. Não
+                                gera
                                 ficheiros para download.</span>
                         </div>
                         <div
                             class="p-5 bg-emerald-500/10 rounded-2xl text-sm flex flex-col gap-3 border border-emerald-500/20">
                             <span class="badge-pro self-start">Nativa</span>
-                            <span class="text-emerald-300 font-medium">Code Interpreter processa a planilha e entrega
+                            <span class="text-emerald-300 font-medium">Code Interpreter processa a planilha e
+                                entrega
                                 gráficos prontos e relatório .xlsx.</span>
                         </div>
                     </div>
@@ -890,7 +671,8 @@
                         <div
                             class="p-5 bg-emerald-500/10 rounded-2xl text-sm flex flex-col gap-3 border border-emerald-500/20">
                             <span class="badge-pro self-start">Nativa</span>
-                            <span class="text-emerald-300 font-medium">Custom GPTs permitem treinar a IA com documentos
+                            <span class="text-emerald-300 font-medium">Custom GPTs permitem treinar a IA com
+                                documentos
                                 fixos e memória contínua.</span>
                         </div>
                     </div>
@@ -903,7 +685,8 @@
                         class="inline-block px-4 py-1.5 rounded-full bg-cyan-500/20 text-[10px] font-black uppercase tracking-widest mb-6 text-cyan-300 border border-cyan-500/30">Caso
                         Acadêmico</span>
                     <h4 class="text-xl font-bold mb-4 text-white">Referência de Documentos</h4>
-                    <p class="text-sm text-slate-500 mb-8">Análise cruzada de 10 artigos científicos simultâneos.</p>
+                    <p class="text-sm text-slate-500 mb-8">Análise cruzada de 10 artigos científicos simultâneos.
+                    </p>
                     <div class="space-y-4">
                         <div
                             class="p-5 bg-rose-500/10 rounded-2xl text-sm flex flex-col gap-3 border border-rose-500/20">
@@ -914,7 +697,8 @@
                         <div
                             class="p-5 bg-emerald-500/10 rounded-2xl text-sm flex flex-col gap-3 border border-emerald-500/20">
                             <span class="badge-pro self-start">Nativa</span>
-                            <span class="text-emerald-300 font-medium">Claude Pro permite carregar centenas de páginas
+                            <span class="text-emerald-300 font-medium">Claude Pro permite carregar centenas de
+                                páginas
                                 em diversos formatos sem bloqueio.</span>
                         </div>
                     </div>
@@ -927,13 +711,15 @@
                         class="inline-block px-4 py-1.5 rounded-full bg-pink-500/20 text-[10px] font-black uppercase tracking-widest mb-6 text-pink-300 border border-pink-500/30">Caso
                         Dev</span>
                     <h4 class="text-xl font-bold mb-4 text-white">Desenvolvimento de Software</h4>
-                    <p class="text-sm text-slate-500 mb-8">Visualizar e testar código de um aplicativo em tempo real.
+                    <p class="text-sm text-slate-500 mb-8">Visualizar e testar código de um aplicativo em tempo
+                        real.
                     </p>
                     <div class="space-y-4">
                         <div
                             class="p-5 bg-rose-500/10 rounded-2xl text-sm flex flex-col gap-3 border border-rose-500/20">
                             <span class="badge-con self-start">Agregador</span>
-                            <span class="text-rose-300 italic">Entrega apenas blocos de texto estático. Sem ambiente de
+                            <span class="text-rose-300 italic">Entrega apenas blocos de texto estático. Sem ambiente
+                                de
                                 execução.</span>
                         </div>
                         <div
@@ -965,7 +751,8 @@
                     <div>
                         <h3 class="text-2xl font-bold mb-6 text-indigo-300">Como os Agregadores Funcionam:</h3>
                         <p class="text-indigo-100/70 mb-8 leading-relaxed italic text-lg">
-                            "Provavelmente é uma interface que divide o uso das IAs. Por exemplo, eles têm 1 assinatura
+                            "Provavelmente é uma interface que divide o uso das IAs. Por exemplo, eles têm 1
+                            assinatura
                             do GPT-4 mas têm 10 contas usando a mesma assinatura. Cada prompt entra numa fila e é
                             executado tipo num paralelismo. Isso explica a lentidão."
                         </p>
@@ -1069,11 +856,14 @@
                 <div class="relative z-10">
                     <h2 class="text-5xl md:text-6xl font-black mb-10 text-white">Veredito Baseado em Dados</h2>
                     <div class="space-y-6 text-white/90 text-xl leading-relaxed">
-                        <p>Agregadores oferecem um <strong class="text-white">ponto de entrada acessível</strong>, mas o
-                            feedback consistente de profissionais aponta limitações críticas que afetam a produtividade.
+                        <p>Agregadores oferecem um <strong class="text-white">ponto de entrada acessível</strong>,
+                            mas o
+                            feedback consistente de profissionais aponta limitações críticas que afetam a
+                            produtividade.
                         </p>
                         <p class="text-white/70">
-                            A economia nominal pode custar caro em termos de tempo perdido com bugs, ausência de memória
+                            A economia nominal pode custar caro em termos de tempo perdido com bugs, ausência de
+                            memória
                             contextual e falta de recursos de análise avançada.
                         </p>
                         <p class="text-3xl font-bold text-emerald-300 pt-4">
@@ -1092,13 +882,16 @@
         <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 text-slate-500">
             <div class="reveal-section">
                 <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Metodologia</h4>
-                <p class="text-xs leading-relaxed">Análise técnica realizada via cruzamento de dados de subscrição de
-                    2025, relatos de utilizadores no Reddit, Reclame Aqui, e análise técnica de paralelismo de APIs em
+                <p class="text-xs leading-relaxed">Análise técnica realizada via cruzamento de dados de subscrição
+                    de
+                    2025, relatos de utilizadores no Reddit, Reclame Aqui, e análise técnica de paralelismo de APIs
+                    em
                     proxies compartilhados.</p>
             </div>
             <div class="reveal-section" style="transition-delay: 0.1s;">
                 <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Fontes</h4>
-                <p class="text-xs leading-relaxed italic">OpenAI Docs, Anthropic Technical Papers, Adapta.org Terms of
+                <p class="text-xs leading-relaxed italic">OpenAI Docs, Anthropic Technical Papers, Adapta.org Terms
+                    of
                     Service, Community Feedback (2023-2025).</p>
             </div>
         </div>

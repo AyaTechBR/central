@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[TEMPLATE] Título do Artigo | AYA Central</title>
+
+    <!-- Design System: TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+
+    <!-- Core Styles -->
+    <style>
+        /* [CORE] Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html.lenis,
+        html.lenis body {
+            height: auto;
+        }
+
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+            /* Gray 950 */
+            color: #f8fafc;
+            /* Slate 50 */
+            overflow-x: hidden;
+            cursor: none;
+            /* Custom cursor override */
+        }
+
+        /* [CORE] Custom Cursor */
+        .custom-cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(99, 102, 241, 0.8);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.15s ease-out, width 0.2s, height 0.2s;
+        }
+
+        .custom-cursor.hover {
+            width: 50px;
+            height: 50px;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        /* [CORE] Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899);
+            z-index: 9999;
+            transform-origin: left;
+            transform: scaleX(0);
+        }
+
+        /* [DESIGN] Glassmorphism Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            /* White/8% */
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(99, 102, 241, 0.3);
+            /* Indigo border on hover */
+            transform: translateY(-5px);
+        }
+
+        /* [DESIGN] Gradients */
+        .hero-gradient {
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.3), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(139, 92, 246, 0.15), transparent);
+            pointer-events: none;
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #818cf8, #c084fc, #f472b6);
+            /* Indigo-Purple-Pink */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* [ANIMATIONS] Initial States for GSAP */
+        .reveal-section,
+        .reveal-left,
+        .reveal-right,
+        .reveal-scale {
+            opacity: 0;
+        }
+
+        .reveal-left {
+            transform: translateX(-50px);
+        }
+
+        .reveal-right {
+            transform: translateX(50px);
+        }
+
+        .reveal-scale {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-indigo-500/30">
+
+    <!-- [COMPONENT] Custom Cursor -->
+    <div class="custom-cursor hidden md:block"></div>
+    <div class="progress-bar"></div>
+
+    <!-- [LAYOUT] Header / Navigation -->
+    <header class="fixed top-0 left-0 w-full p-6 z-50 flex justify-between items-center mix-blend-difference">
+        <a href="index.html"
+            class="magnetic-btn flex items-center gap-2 text-sm font-bold tracking-widest uppercase hover:text-indigo-400 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Voltar
+        </a>
+    </header>
+
+    <!-- [SECTION] Hero -->
+    <section class="min-h-screen relative flex items-center justify-center p-6 hero-gradient overflow-hidden">
+        <!-- Floating Objects (Optional) -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-[100px] animate-pulse">
+            </div>
+            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[100px] animate-pulse"
+                style="animation-delay: 2s"></div>
+        </div>
+
+        <!-- Floating particles container -->
+        <div id="particles" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-7xl mx-auto w-full text-center">
+            <!-- Badge -->
+            <div class="floating-badge mb-8">
+                <img src="assets/img/AYA.png" alt="AYA"
+                    class="h-16 w-auto mx-auto hero-glow opacity-90 rounded-2xl p-2 bg-white/5 backdrop-blur-md border border-white/10"
+                    style="filter: brightness(0) invert(1);">
+            </div>
+
+            <!-- Pre-Header Tag -->
+            <div
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md mb-8">
+                <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span class="text-xs font-bold tracking-widest uppercase text-slate-300">Whitepaper Técnico • [MÊS
+                    ANO]</span>
+            </div>
+
+            <!-- Title -->
+            <h1 class="hero-title text-5xl md:text-8xl font-black mb-10 leading-[0.9] tracking-tight">
+                <span class="block text-white">[TÍTULO PRINCIPAL]</span>
+                <span class="block gradient-text mt-2">[SUBTÍTULO COLORIDO]</span>
+            </h1>
+
+            <!-- Description -->
+            <p
+                class="hero-subtitle text-xl md:text-2xl text-slate-400 max-w-4xl mx-auto font-light leading-relaxed mb-16 opacity-0">
+                [Descrição curta e impactante sobre o tema do artigo. Defina o propósito em 2 linhas.]
+            </p>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div
+            class="scroll-indicator absolute bottom-10 w-full flex flex-col items-center justify-center gap-2 text-slate-500 z-20">
+            <span class="text-[10px] uppercase tracking-[0.3em] font-bold">Scroll para explorar</span>
+            <svg class="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- [COMPONENT] Mini Summmary / Navigation (Sticky-ish) -->
+    <div class="max-w-4xl mx-auto -mt-10 px-6 relative z-30 mb-24">
+        <div
+            class="glass-card p-2 rounded-2xl border border-white/10 flex flex-wrap md:flex-nowrap justify-between gap-2 shadow-2xl backdrop-blur-xl">
+            <!-- Item 1 -->
+            <a href="#section1"
+                class="group flex-1 flex items-center gap-3 px-6 py-4 rounded-xl hover:bg-white/5 transition-all">
+                <span
+                    class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">01</span>
+                <div class="flex flex-col">
+                    <span
+                        class="text-[10px] uppercase tracking-widest text-slate-500 group-hover:text-indigo-300">[LABEL]</span>
+                    <span class="text-sm font-bold text-white">[Tópico 1]</span>
+                </div>
+            </a>
+            <div class="hidden md:block w-px bg-white/10 my-4"></div>
+            <!-- Item 2 -->
+            <a href="#section2"
+                class="group flex-1 flex items-center gap-3 px-6 py-4 rounded-xl hover:bg-white/5 transition-all">
+                <span
+                    class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">02</span>
+                <div class="flex flex-col">
+                    <span
+                        class="text-[10px] uppercase tracking-widest text-slate-500 group-hover:text-purple-300">[LABEL]</span>
+                    <span class="text-sm font-bold text-white">[Tópico 2]</span>
+                </div>
+            </a>
+            <!-- Add more items as needed -->
+        </div>
+    </div>
+
+    <!-- [SECTION] Standard Content Block (Left Reveal) -->
+    <section id="section1" class="py-32 px-6 relative">
+        <div class="max-w-6xl mx-auto">
+            <div class="reveal-section mb-16">
+                <h2 class="text-4xl md:text-6xl font-black mb-6 text-white tracking-tight">
+                    <span class="text-indigo-500">01.</span> [TÍTULO DA SEÇÃO]<br>
+                    <span class="gradient-text">[SUBTÍTULO]</span>
+                </h2>
+                <p class="text-xl text-slate-300 leading-relaxed max-w-3xl">
+                    [Texto introdutório da seção. Use classes como <code class="text-indigo-400">text-slate-300</code>
+                    para parágrafos padrão.]
+                </p>
+            </div>
+
+            <!-- Content Grid: Cards -->
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="glass-card p-10 rounded-[2.5rem] reveal-left">
+                    <h3 class="text-2xl font-bold mb-4 text-white">[Item Card 1]</h3>
+                    <p class="text-slate-400">[Descrição do item card.]</p>
+                </div>
+                <div class="glass-card p-10 rounded-[2.5rem] reveal-right" style="transition-delay: 0.1s;">
+                    <h3 class="text-2xl font-bold mb-4 text-white">[Item Card 2]</h3>
+                    <p class="text-slate-400">[Descrição do item card.]</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [SECTION] Verdict / Conclusion -->
+    <section class="py-32 px-6 relative overflow-hidden">
+        <div class="max-w-5xl mx-auto">
+            <div class="relative rounded-[3rem] p-16 overflow-hidden reveal-scale">
+                <!-- Background Gradient -->
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600"></div>
+
+                <div class="relative z-10">
+                    <h2 class="text-5xl md:text-6xl font-black mb-10 text-white">Conclusão</h2>
+                    <div class="space-y-6 text-white/90 text-xl leading-relaxed">
+                        <p>[Parágrafo de conclusão impactante.]</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [LAYOUT] Footer -->
+    <footer class="py-20 px-6 border-t border-white/10">
+        <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 text-slate-500">
+            <div class="reveal-section">
+                <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Metodologia</h4>
+                <p class="text-xs leading-relaxed">[Explicação breve da metodologia de pesquisa usada no artigo.]</p>
+            </div>
+            <div class="reveal-section" style="transition-delay: 0.1s;">
+                <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Fontes</h4>
+                <p class="text-xs leading-relaxed italic">[Lista de fontes, documentos ou referências.]</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- [COMPONENT] Bottom Brand -->
+    <div class="pb-24 pt-12 flex flex-col justify-center items-center gap-4">
+        <img src="assets/img/AYA.png" alt="AYA Logo" class="h-20 opacity-80" style="filter: brightness(0) invert(1);">
+        <p class="text-sm font-bold uppercase tracking-[0.4em] text-slate-500">The future is intelligence</p>
+    </div>
+
+    <!-- Fixed Bar -->
+    <div
+        class="fixed bottom-0 left-0 w-full bg-black/80 backdrop-blur-md py-4 text-[9px] text-slate-500 font-bold uppercase tracking-[0.5em] text-center z-50 border-t border-white/5">
+        Este documento é uma análise técnica independente • Powered by AYA
+    </div>
+
+    <!-- [LOGIC] Scripts -->
+    <script>
+        // 1. Initialize Smooth Scroll (Lenis)
+        const lenis = new Lenis({ duration: 1.2, smoothWheel: true });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+
+        // Integrar Lenis com GSAP ScrollTrigger
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+
+        // 2. Register GSAP Plugins
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 3. Global Animations
+
+        // Progress Bar
+        gsap.to('.progress-bar', {
+            scaleX: 1, ease: 'none',
+            scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 0.3 }
+        });
+
+        // Reveal Sections (Fade Up)
+        gsap.utils.toArray('.reveal-section').forEach((el) => {
+            gsap.to(el, {
+                opacity: 1, y: 0, duration: 1, ease: 'power3.out',
+                scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none reverse' }
+            });
+        });
+
+        // Reveal Left
+        gsap.utils.toArray('.reveal-left').forEach(el => {
+            gsap.to(el, { opacity: 1, x: 0, duration: 1.2, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 80%' } });
+        });
+
+        // Reveal Right
+        gsap.utils.toArray('.reveal-right').forEach(el => {
+            gsap.to(el, { opacity: 1, x: 0, duration: 1.2, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 80%' } });
+        });
+
+        // Reveal Scale
+        gsap.utils.toArray('.reveal-scale').forEach(el => {
+            gsap.to(el, { opacity: 1, scale: 1, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 85%' } });
+        });
+
+        // Hero Animation Sequence
+        const heroTl = gsap.timeline();
+        heroTl.from('.floating-badge', { y: 50, opacity: 0, duration: 1 })
+            .from('.hero-title span', { y: 100, opacity: 0, stagger: 0.2, duration: 1.2, ease: 'power4.out' }, '-=0.5')
+            .to('.hero-subtitle', { opacity: 1, y: 0, duration: 1 }, '-=0.5');
+
+        // 4. Custom Cursor Logic
+        const cursor = document.querySelector('.custom-cursor');
+        let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
+        document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+        function animateCursor() {
+            cursorX += (mouseX - cursorX) * 0.1; cursorY += (mouseY - cursorY) * 0.1;
+            cursor.style.left = (cursorX - 10) + 'px'; cursor.style.top = (cursorY - 10) + 'px';
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+
+        // Create floating particles if container exists
+        const particlesContainer = document.getElementById('particles');
+        if (particlesContainer) {
+            const particleCount = 20;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle', 'absolute', 'w-1', 'h-1', 'bg-indigo-500/30', 'rounded-full');
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animation = `float ${10 + Math.random() * 20}s linear infinite`;
+                particlesContainer.appendChild(particle);
+
+                gsap.to(particle, {
+                    y: -100 - Math.random() * 200,
+                    x: (Math.random() - 0.5) * 100,
+                    duration: 10 + Math.random() * 20,
+                    repeat: -1,
+                    ease: 'none',
+                });
+            }
+        }
+
+        // Cursor Hover Effects
+        document.querySelectorAll('a, button, .glass-card').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exportação de Dados em IAs: Guia Completo | AYA Central</title>
+
+    <!-- Design System: TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+
+    <!-- Core Styles -->
+    <style>
+        /* [CORE] Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html.lenis,
+        html.lenis body {
+            height: auto;
+        }
+
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+            /* Gray 950 */
+            color: #f8fafc;
+            /* Slate 50 */
+            overflow-x: hidden;
+            cursor: none;
+            /* Custom cursor override */
+        }
+
+        /* [CORE] Custom Cursor */
+        .custom-cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(99, 102, 241, 0.8);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.15s ease-out, width 0.2s, height 0.2s;
+        }
+
+        .custom-cursor.hover {
+            width: 50px;
+            height: 50px;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        /* [CORE] Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899);
+            z-index: 9999;
+            transform-origin: left;
+            transform: scaleX(0);
+        }
+
+        /* [DESIGN] Glassmorphism Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            /* White/8% */
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(99, 102, 241, 0.3);
+            /* Indigo border on hover */
+            transform: translateY(-5px);
+        }
+
+        /* [DESIGN] Gradients */
+        .hero-gradient {
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.3), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(139, 92, 246, 0.15), transparent);
+            pointer-events: none;
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #818cf8, #c084fc, #f472b6);
+            /* Indigo-Purple-Pink */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* [ANIMATIONS] Initial States for GSAP */
+        .reveal-section,
+        .reveal-left,
+        .reveal-right,
+        .reveal-scale {
+            opacity: 0;
+        }
+
+        .reveal-left {
+            transform: translateX(-50px);
+        }
+
+        .reveal-right {
+            transform: translateX(50px);
+        }
+
+        .reveal-scale {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-indigo-500/30">
+
+    <!-- [COMPONENT] Custom Cursor -->
+    <div class="custom-cursor hidden md:block"></div>
+    <div class="progress-bar"></div>
+
+    <!-- [LAYOUT] Header / Navigation -->
+    <header class="fixed top-0 left-0 w-full p-6 z-50 flex justify-between items-center mix-blend-difference">
+        <a href="index.html"
+            class="magnetic-btn flex items-center gap-2 text-sm font-bold tracking-widest uppercase hover:text-indigo-400 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Voltar
+        </a>
+    </header>
+
+    <!-- [SECTION] Hero -->
+    <section class="min-h-screen relative flex items-center justify-center p-6 hero-gradient overflow-hidden">
+        <!-- Floating Objects (Optional) -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-[100px] animate-pulse">
+            </div>
+            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[100px] animate-pulse"
+                style="animation-delay: 2s"></div>
+        </div>
+
+        <!-- Floating particles container -->
+        <div id="particles" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-7xl mx-auto w-full text-center">
+            <!-- Badge -->
+            <div class="floating-badge mb-8">
+                <img src="assets/img/AYA.png" alt="AYA"
+                    class="h-16 w-auto mx-auto hero-glow opacity-100 rounded-2xl p-2 bg-white/10 backdrop-blur-md border border-white/20">
+            </div>
+
+            <div
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md mb-8">
+                <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span class="text-xs font-bold tracking-widest uppercase text-slate-300">Privacy Review • Dez
+                    2025</span>
+            </div>
+
+            <!-- Title -->
+            <h1 class="hero-title text-5xl md:text-8xl font-black mb-10 leading-[0.9] tracking-tight">
+                <span class="block text-white">Exportação de Dados</span>
+                <span class="block gradient-text mt-2">em IAs Generativas</span>
+            </h1>
+
+            <!-- Description -->
+            <p
+                class="hero-subtitle text-xl md:text-2xl text-slate-400 max-w-4xl mx-auto font-light leading-relaxed mb-16 opacity-0">
+                Guia definitivo sobre como extrair seus dados do Claude, ChatGPT, Gemini e outros.
+                Porque seus dados devem ser seus, não importa a plataforma.
+            </p>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div
+            class="scroll-indicator absolute bottom-10 w-full flex flex-col items-center justify-center gap-2 text-slate-500 z-20">
+            <span class="text-[10px] uppercase tracking-[0.3em] font-bold">Scroll para conferir</span>
+            <svg class="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- [COMPONENT] Mini Summmary / Navigation (Sticky-ish) -->
+    <div class="max-w-5xl mx-auto -mt-10 px-6 relative z-30 mb-24">
+        <div
+            class="glass-card p-2 rounded-2xl border border-white/10 flex flex-wrap md:flex-nowrap justify-between gap-2 shadow-2xl backdrop-blur-xl">
+            <!-- Item 1 -->
+            <a href="#tabela-resumo"
+                class="group flex-1 flex items-center gap-3 px-6 py-4 rounded-xl hover:bg-white/5 transition-all">
+                <span
+                    class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">01</span>
+                <div class="flex flex-col">
+                    <span class="text-[10px] uppercase tracking-widest text-slate-500 group-hover:text-indigo-300">Visão
+                        Geral</span>
+                    <span class="text-sm font-bold text-white">Tabela Resumida</span>
+                </div>
+            </a>
+            <div class="hidden md:block w-px bg-white/10 my-4"></div>
+            <!-- Item 2 -->
+            <a href="#exportacao-completa"
+                class="group flex-1 flex items-center gap-3 px-6 py-4 rounded-xl hover:bg-white/5 transition-all">
+                <span
+                    class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">02</span>
+                <div class="flex flex-col">
+                    <span
+                        class="text-[10px] uppercase tracking-widest text-slate-500 group-hover:text-emerald-300">Histórico
+                        Total</span>
+                    <span class="text-sm font-bold text-white">Claude & ChatGPT</span>
+                </div>
+            </a>
+            <div class="hidden md:block w-px bg-white/10 my-4"></div>
+            <!-- Item 3 -->
+            <a href="#exportacao-individual"
+                class="group flex-1 flex items-center gap-3 px-6 py-4 rounded-xl hover:bg-white/5 transition-all">
+                <span
+                    class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">03</span>
+                <div class="flex flex-col">
+                    <span class="text-[10px] uppercase tracking-widest text-slate-500 group-hover:text-purple-300">Chats
+                        Avulsos</span>
+                    <span class="text-sm font-bold text-white">Perplexity & Outros</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- [SECTION] Resumo Gráfico das Capacidades (Moved Up) -->
+    <section id="tabela-resumo" class="py-12 px-6 relative">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-3xl md:text-5xl font-black mb-12 text-white text-center reveal-scale">
+                Resumo Gráfico
+            </h2>
+
+            <div class="glass-card rounded-3xl overflow-hidden reveal-section">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr
+                                class="border-b border-white/10 bg-white/5 text-xs uppercase tracking-widest text-slate-400">
+                                <th class="p-6 font-bold">Plataforma</th>
+                                <th class="p-6 font-bold">Tipo de Exportação</th>
+                                <th class="p-6 font-bold">Detalhes</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm text-slate-300">
+                            <!-- Claude -->
+                            <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                <td class="p-6 font-bold text-white">Claude</td>
+                                <td class="p-6"><span
+                                        class="bg-emerald-500/20 text-emerald-300 px-2 py-1 rounded text-xs font-bold">✅
+                                        TUDO + Individual</span></td>
+                                <td class="p-6">Export completo via email + extensões por chat individual</td>
+                            </tr>
+                            <!-- ChatGPT -->
+                            <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                <td class="p-6 font-bold text-white">ChatGPT</td>
+                                <td class="p-6"><span
+                                        class="bg-emerald-500/20 text-emerald-300 px-2 py-1 rounded text-xs font-bold">✅
+                                        TUDO</span>
+                                </td>
+                                <td class="p-6">Histórico 100% via Settings (formato JSON)</td>
+                            </tr>
+                            <!-- DeepSeek -->
+                            <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                <td class="p-6 font-bold text-white">DeepSeek</td>
+                                <td class="p-6"><span
+                                        class="bg-emerald-500/20 text-emerald-300 px-2 py-1 rounded text-xs font-bold">✅
+                                        TUDO</span>
+                                </td>
+                                <td class="p-6">Histórico completo via Settings (JSON)</td>
+                            </tr>
+                            <!-- Mistral -->
+                            <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                <td class="p-6 font-bold text-white">Mistral</td>
+                                <td class="p-6"><span
+                                        class="bg-emerald-500/20 text-emerald-300 px-2 py-1 rounded text-xs font-bold">✅
+                                        TUDO</span>
+                                </td>
+                                <td class="p-6">Histórico completo com conformidade GDPR</td>
+                            </tr>
+                            <!-- Perplexity -->
+                            <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                <td class="p-6 font-bold text-white">Perplexity</td>
+                                <td class="p-6"><span
+                                        class="bg-blue-500/20 text-blue-300 px-2 py-1 rounded text-xs font-bold">📝
+                                        Individual</span>
+                                </td>
+                                <td class="p-6">Um thread por vez, via botão Export</td>
+                            </tr>
+                            <!-- Genspark -->
+                            <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                <td class="p-6 font-bold text-white">Genspark</td>
+                                <td class="p-6"><span
+                                        class="bg-blue-500/20 text-blue-300 px-2 py-1 rounded text-xs font-bold">📝
+                                        Individual</span>
+                                </td>
+                                <td class="p-6">Um chat por vez via extensão (sem nativo)</td>
+                            </tr>
+                            <!-- Copilot -->
+                            <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                <td class="p-6 font-bold text-white">Copilot</td>
+                                <td class="p-6"><span
+                                        class="bg-blue-500/20 text-blue-300 px-2 py-1 rounded text-xs font-bold">📝
+                                        Individual</span>
+                                </td>
+                                <td class="p-6">Uma resposta por vez, sem sessão</td>
+                            </tr>
+                            <!-- Manus -->
+                            <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                <td class="p-6 font-bold text-white">Manus</td>
+                                <td class="p-6"><span
+                                        class="bg-amber-500/20 text-amber-300 px-2 py-1 rounded text-xs font-bold">🔄
+                                        Outputs</span>
+                                </td>
+                                <td class="p-6">Apenas arquivos gerados, não conversas</td>
+                            </tr>
+                            <!-- Gemini -->
+                            <tr class="hover:bg-rose-500/5 transition-colors">
+                                <td class="p-6 font-bold text-white">Gemini</td>
+                                <td class="p-6"><span
+                                        class="bg-rose-500/20 text-rose-300 px-2 py-1 rounded text-xs font-bold">❌
+                                        Nenhuma</span>
+                                </td>
+                                <td class="p-6 text-rose-400 font-bold">Sem exportação oficial ou funcional</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- CTA: Step-by-Step Guide -->
+            <div class="mt-16 text-center reveal-section">
+                <a href="guia-exportacao-passo-a-passo.html"
+                    class="group inline-flex items-center gap-4 px-10 py-5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-2xl font-bold text-lg uppercase tracking-widest transition-all hover:scale-105 shadow-[0_0_50px_-10px_rgba(99,102,241,0.6)] relative z-40">
+                    <span class="flex items-center gap-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Como Exportar Passo a Passo?
+                    </span>
+                    <svg class="w-6 h-6 group-hover:translate-x-2 transition-transform" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                </a>
+                <p class="text-xs text-slate-500 mt-4 uppercase tracking-widest">👆 Clique aqui para tutorial completo
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- [SECTION] Big Players Analysis -->
+    <section id="exportacao-completa" class="py-20 px-6 relative">
+        <div class="max-w-6xl mx-auto">
+            <div class="reveal-section mb-16">
+                <h2 class="text-4xl md:text-6xl font-black mb-6 text-white tracking-tight">
+                    <span class="text-indigo-500">01.</span> Exportação Completa<br>
+                    <span class="gradient-text">(TUDO)</span>
+                </h2>
+                <p class="text-xl text-slate-300 leading-relaxed max-w-3xl">
+                    As plataformas que permitem baixar 100% do seu histórico garantem a verdadeira posse dos dados.
+                    Ideal para backup, migração e conformidade.
+                </p>
+            </div>
+
+            <!-- Content Grid: Cards -->
+            <div class="grid lg:grid-cols-2 gap-8 mb-12">
+                <!-- Claude Card -->
+                <div class="glass-card p-10 rounded-[2.5rem] reveal-left border-t-4 border-t-indigo-500 relative">
+                    <div class="absolute top-6 right-8">
+                        <span
+                            class="px-3 py-1 bg-indigo-500/20 text-indigo-300 text-[10px] uppercase font-bold tracking-widest rounded-full">Recomendado</span>
+                    </div>
+                    <div class="flex items-center gap-4 mb-6">
+                        <span class="text-3xl">🛡️</span>
+                        <h3 class="text-3xl font-bold text-white">Claude (Anthropic)</h3>
+                    </div>
+
+                    <p class="text-slate-300 mb-6 leading-relaxed">
+                        A solução mais robusta do mercado. Oferece tanto exportação completa nativa quanto flexibilidade
+                        para chats individuais via extensões.
+                    </p>
+
+                    <ul class="space-y-4 text-sm text-slate-400 mb-8">
+                        <li class="flex gap-3">
+                            <span class="text-emerald-400">✓</span>
+                            <div>
+                                <strong class="text-white">Exportação Oficial:</strong>
+                                <span class="block text-xs mt-1">Via Email (Settings > Export Data). Contém 100% do
+                                    histórico. <sup class="text-indigo-400">[1]</sup></span>
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-emerald-400">✓</span>
+                            <div>
+                                <strong class="text-white">Formatos:</strong>
+                                <span class="block text-xs mt-1">JSON nativo. Extensões permitem PDF, MD, HTML.</span>
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-emerald-400">✓</span>
+                            <div>
+                                <strong class="text-white">Híbrido:</strong>
+                                <span class="block text-xs mt-1">Permite escolher: baixar tudo de uma vez ou chats
+                                    específicos.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- ChatGPT Card -->
+                <div id="chatgpt" class="glass-card p-10 rounded-[2.5rem] reveal-right border-t-4 border-t-emerald-500">
+                    <div class="flex items-center gap-4 mb-6">
+                        <span class="text-3xl">🤖</span>
+                        <h3 class="text-3xl font-bold text-white">ChatGPT (OpenAI)</h3>
+                    </div>
+
+                    <p class="text-slate-300 mb-6 leading-relaxed">
+                        Padrão estável. Permite exportar tudo, mas carece de opções nativas para chats individuais ou
+                        formatos legíveis como PDF.
+                    </p>
+
+                    <ul class="space-y-4 text-sm text-slate-400 mb-8">
+                        <li class="flex gap-3">
+                            <span class="text-emerald-400">✓</span>
+                            <div>
+                                <strong class="text-white">Exportação Oficial:</strong>
+                                <span class="block text-xs mt-1">Arquivo ZIP via Email (Settings > Data
+                                    Controls). <sup class="text-emerald-400">[2]</sup></span>
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-amber-400">⚠️</span>
+                            <div>
+                                <strong class="text-white">Limitação de Formato:</strong>
+                                <span class="block text-xs mt-1">Apenas JSON/HTML. Requer "gambiarra" ou extensões para
+                                    PDF.</span>
+                            </div>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-amber-400">⚠️</span>
+                            <div>
+                                <strong class="text-white">Tudo ou Nada:</strong>
+                                <span class="block text-xs mt-1">Não possui botão nativo para exportar apenas uma
+                                    conversa rápida.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Other Players (DeepSeek, Mistral) -->
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="glass-card p-8 rounded-3xl reveal-section">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-xl font-bold text-white">DeepSeek</h3>
+                        <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-1 rounded">JSON Completo</span>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-4">
+                        Permite exportação de <strong>todo o histórico</strong> através de <em>Settings -> Data ->
+                            Export data</em> em formato JSON. <sup class="text-indigo-400">[3]</sup>
+                        Todos os chats armazenados podem ser exportados simultaneamente.
+                        <span class="text-xs text-orange-400 block mt-2">⚠️ Dados em servidores na China.</span>
+                    </p>
+                </div>
+
+                <div class="glass-card p-8 rounded-3xl reveal-section" style="transition-delay: 0.1s;">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-xl font-bold text-white">Mistral AI</h3>
+                        <span class="text-xs bg-indigo-500/10 text-indigo-400 px-2 py-1 rounded">GDPR Ready</span>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-4">
+                        Oferece <strong>direito à portabilidade GDPR completa</strong>. <sup
+                            class="text-indigo-400">[4]</sup>
+                        Exporte todo o histórico em múltiplos formatos (Markdown, PDF, HTML, JSON) via ferramenta
+                        dedicada ou suporte.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- [SECTION] Individual Exports -->
+    <section id="exportacao-individual" class="py-20 px-6 relative bg-white/5">
+        <div class="max-w-6xl mx-auto">
+            <div class="reveal-section mb-16">
+                <h2 class="text-4xl md:text-5xl font-black mb-6 text-white tracking-tight">
+                    <span class="text-purple-500">02.</span> Exportação Individual<br>
+                    <span class="gradient-text">Chat por Chat</span>
+                </h2>
+                <p class="text-lg text-slate-300 leading-relaxed max-w-3xl">
+                    Plataformas que focam em "sessões" e não em histórico. Útil para quem quer salvar uma resposta
+                    específica, mas terrível para backup.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Perplexity -->
+                <div class="glass-card p-8 rounded-3xl reveal-section border-l-4 border-l-cyan-500">
+                    <h3 class="text-lg font-bold text-white mb-2">Perplexity</h3>
+                    <p class="text-xs text-slate-400 mb-4 border-b border-white/5 pb-4">Exporta Threads Individuais.</p>
+                    <ul class="text-xs text-slate-300 space-y-2">
+                        <li class="flex gap-2"><span>📂</span> PDF, Markdown, DOCX</li>
+                        <li class="flex gap-2"><span>⚠️</span> Sem exportação em massa nativa</li>
+                        <li class="flex gap-2"><span>💡</span> Ótimo para pesquisa pontual</li>
+                    </ul>
+                </div>
+
+                <!-- Copilot -->
+                <div class="glass-card p-8 rounded-3xl reveal-section border-l-4 border-l-blue-500"
+                    style="transition-delay: 0.1s;">
+                    <h3 class="text-lg font-bold text-white mb-2">Microsoft Copilot</h3>
+                    <p class="text-xs text-slate-400 mb-4 border-b border-white/5 pb-4">Apenas Respostas.</p>
+                    <ul class="text-xs text-slate-300 space-y-2">
+                        <li class="flex gap-2"><span>📄</span> Word, PDF, TXT</li>
+                        <li class="flex gap-2"><span>❌</span> Não exporta sessão inteira</li>
+                        <li class="flex gap-2"><span>⚠️</span> Foco em integração Office</li>
+                    </ul>
+                </div>
+
+                <!-- Genspark -->
+                <div class="glass-card p-8 rounded-3xl reveal-section border-l-4 border-l-orange-500"
+                    style="transition-delay: 0.2s;">
+                    <h3 class="text-lg font-bold text-white mb-2">Genspark</h3>
+                    <p class="text-xs text-slate-400 mb-4 border-b border-white/5 pb-4">Requer Extensão Chrome.</p>
+                    <ul class="text-xs text-slate-300 space-y-2">
+                        <li class="flex gap-2"><span>🧩</span> TXT ou JSON (via plugin)</li>
+                        <li class="flex gap-2"><span>❌</span> Sem suporte nativo</li>
+                        <li class="flex gap-2"><span>💡</span> "Genspark Conversation Manager"</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- The Bad Ones -->
+            <div class="mt-12 glass-card p-8 rounded-3xl bg-rose-500/5 border border-rose-500/20 reveal-section">
+                <div class="flex items-start gap-4">
+                    <div class="p-3 bg-rose-500/20 rounded-xl text-rose-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white mb-2">Sem Exportação (Cuidado!)</h3>
+                        <p class="text-sm text-slate-400 mb-4">
+                            <strong>Google Gemini:</strong> Nenhuma forma oficial. Políticas corporativas frequentemente
+                            bloqueiam.
+                            <br>
+                            <strong>Manus AI:</strong> Exporta apenas os <em>artefatos finais</em> (PDF, código), não a
+                            conversa que levou a eles.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- [SECTION] Practical Implications -->
+    <section class="py-20 px-6 relative border-t border-white/5">
+        <div class="max-w-4xl mx-auto">
+            <div class="reveal-section mb-12 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6 text-white">Por Que Isso Importa?</h2>
+                <p class="text-slate-400">Três razões críticas para você não ignorar a exportação dos seus dados.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Lock-in -->
+                <div class="reveal-section">
+                    <div class="mb-4 text-4xl">🔐</div>
+                    <h3 class="text-lg font-bold text-white mb-2">Vendor Lock-in</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">
+                        Se o ChatGPT banir sua conta amanhã, você perde tudo? Exportar regularmente em formatos abertos
+                        (JSON/Markdown) é sua única apólice de seguro contra "despejo digital".
+                    </p>
+                </div>
+
+                <!-- Training -->
+                <div class="reveal-section" style="transition-delay: 0.1s;">
+                    <div class="mb-4 text-4xl">🧠</div>
+                    <h3 class="text-lg font-bold text-white mb-2">Treinamento de IA</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">
+                        Dados exportados permitem que você faça <em>fine-tuning</em> em seus próprios modelos locais
+                        (Llama 3, Mistral) no futuro. Seu histórico vale ouro.
+                    </p>
+                </div>
+
+                <!-- Search -->
+                <div class="reveal-section" style="transition-delay: 0.2s;">
+                    <div class="mb-4 text-4xl">🔎</div>
+                    <h3 class="text-lg font-bold text-white mb-2">Buscável & Local</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">
+                        Ter arquivos locais permite usar ferramentas como o <em>Obsidian</em> ou <em>Greptile</em> para
+                        indexar e buscar em todo o seu "segundo cérebro" instantaneamente.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [SECTION] Conclusion -->
+    <section class="py-32 px-6 relative overflow-hidden">
+        <div class="max-w-5xl mx-auto">
+            <div class="relative rounded-[3rem] p-16 overflow-hidden reveal-scale">
+                <!-- Background Gradient -->
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-900 via-slate-900 to-black"></div>
+                <div class="absolute inset-0 bg-[url('assets/img/grid.svg')] opacity-20"></div>
+
+                <div class="relative z-10 text-center">
+                    <h2 class="text-4xl md:text-5xl font-black mb-8 text-white">Veredito Final</h2>
+                    <div class="space-y-6 text-slate-300 text-lg leading-relaxed max-w-3xl mx-auto">
+                        <p>
+                            Se a <strong>posse dos dados</strong> é sua prioridade, <span
+                                class="text-indigo-400 font-bold">Claude</span> é a escolha indiscutível,
+                            oferecendo o melhor dos dois mundos (backup completo e exportação individual).
+                        </p>
+                        <p>
+                            Para usuários corporativos preocupados com GDPR, o <strong>Mistral</strong> brilha.
+                            E se você usa <strong>Gemini</strong> em ambiente profissional: cuidado. Seus dados estão
+                            presos na plataforma.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [LAYOUT] Footer -->
+    <footer class="py-20 px-6 border-t border-white/10">
+        <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 text-slate-500">
+            <div class="reveal-section">
+                <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Sobre a Análise</h4>
+                <p class="text-xs leading-relaxed">
+                    Comparativo realizado testando as opções nativas de "Settings" e "Export" em todas as plataformas
+                    listadas (Dez/2025).
+                    Extensões de terceiros mencionadas como alternativas não oficiais.
+                </p>
+            </div>
+            <div class="reveal-section" style="transition-delay: 0.1s;">
+                <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Referências</h4>
+                <ul class="text-[10px] text-slate-500 space-y-2 font-mono">
+                    <li><span class="text-indigo-400">[1]</span> Anthropic Help Center: Accessing your data</li>
+                    <li><span class="text-emerald-400">[2]</span> OpenAI Help: How to export your data</li>
+                    <li><span class="text-slate-400">[3]</span> DeepSeek Privacy Policy (Data Export)</li>
+                    <li><span class="text-slate-400">[4]</span> Mistral AI Legal & GDPR Compliance</li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <!-- [COMPONENT] Bottom Brand -->
+    <div class="pb-24 pt-12 flex flex-col justify-center items-center gap-4">
+        <img src="assets/img/AYA.png" alt="AYA Logo" class="h-20 opacity-80" style="filter: brightness(0) invert(1);">
+        <p class="text-sm font-bold uppercase tracking-[0.4em] text-slate-500">The future is intelligence</p>
+    </div>
+
+    <!-- Fixed Bar -->
+    <div
+        class="fixed bottom-0 left-0 w-full bg-black/80 backdrop-blur-md py-4 text-[9px] text-slate-500 font-bold uppercase tracking-[0.5em] text-center z-50 border-t border-white/5">
+        Este documento é uma análise técnica independente • Powered by AYA
+    </div>
+
+    <!-- [LOGIC] Scripts -->
+    <script>
+        // 1. Initialize Smooth Scroll (Lenis)
+        const lenis = new Lenis({ duration: 1.2, smoothWheel: true });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+
+        // Integrar Lenis com GSAP ScrollTrigger
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+
+        // 2. Register GSAP Plugins
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 3. Global Animations
+
+        // Progress Bar
+        gsap.to('.progress-bar', {
+            scaleX: 1, ease: 'none',
+            scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 0.3 }
+        });
+
+        // Reveal Sections (Fade Up)
+        gsap.utils.toArray('.reveal-section').forEach((el) => {
+            gsap.to(el, {
+                opacity: 1, y: 0, duration: 1, ease: 'power3.out',
+                scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none reverse' }
+            });
+        });
+
+        // Reveal Left
+        gsap.utils.toArray('.reveal-left').forEach(el => {
+            gsap.to(el, { opacity: 1, x: 0, duration: 1.2, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 80%' } });
+        });
+
+        // Reveal Right
+        gsap.utils.toArray('.reveal-right').forEach(el => {
+            gsap.to(el, { opacity: 1, x: 0, duration: 1.2, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 80%' } });
+        });
+
+        // Reveal Scale
+        gsap.utils.toArray('.reveal-scale').forEach(el => {
+            gsap.to(el, { opacity: 1, scale: 1, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 85%' } });
+        });
+
+        // Hero Animation Sequence
+        const heroTl = gsap.timeline();
+        heroTl.from('.floating-badge', { y: 50, opacity: 0, duration: 1 })
+            .from('.hero-title span', { y: 100, opacity: 0, stagger: 0.2, duration: 1.2, ease: 'power4.out' }, '-=0.5')
+            .to('.hero-subtitle', { opacity: 1, y: 0, duration: 1 }, '-=0.5');
+
+        // 4. Custom Cursor Logic
+        const cursor = document.querySelector('.custom-cursor');
+        let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
+        document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+        function animateCursor() {
+            cursorX += (mouseX - cursorX) * 0.1; cursorY += (mouseY - cursorY) * 0.1;
+            cursor.style.left = (cursorX - 10) + 'px'; cursor.style.top = (cursorY - 10) + 'px';
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Cursor Hover Effects
+        document.querySelectorAll('a, button, .glass-card').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // Create floating particles
+        const particlesContainer = document.getElementById('particles');
+        if (particlesContainer) {
+            const particleCount = 20;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle', 'absolute', 'w-1', 'h-1', 'bg-indigo-500/30', 'rounded-full');
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animation = `float ${10 + Math.random() * 20}s linear infinite`;
+                particlesContainer.appendChild(particle);
+
+                gsap.to(particle, {
+                    y: -100 - Math.random() * 200,
+                    x: (Math.random() - 0.5) * 100,
+                    duration: 10 + Math.random() * 20,
+                    repeat: -1,
+                    ease: 'none',
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>
