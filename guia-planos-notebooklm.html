@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Completo: Planos do Google NotebookLM | Do Free ao Ultra</title>
+
+    <!-- Design System: TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+
+    <!-- Core Styles -->
+    <style>
+        /* [CORE] Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html.lenis,
+        html.lenis body {
+            height: auto;
+        }
+
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+            color: #f8fafc;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* [CORE] Custom Cursor */
+        .custom-cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(244, 114, 182, 0.8);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.15s ease-out, width 0.2s, height 0.2s;
+        }
+
+        .custom-cursor.hover {
+            width: 50px;
+            height: 50px;
+            background: rgba(244, 114, 182, 0.1);
+        }
+
+        /* [CORE] Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #fdba74, #fb923c, #e11d48, #7c3aed);
+            z-index: 9999;
+            transform-origin: left;
+            transform: scaleX(0);
+        }
+
+        /* [DESIGN] Glassmorphism Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(244, 114, 182, 0.3);
+            transform: translateY(-5px);
+        }
+
+        /* [DESIGN] Gradients */
+        .hero-gradient {
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(244, 114, 182, 0.2), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(124, 58, 237, 0.15), transparent);
+            pointer-events: none;
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #fb923c, #f472b6, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* [ANIMATIONS] Initial States for GSAP */
+        .reveal-section,
+        .reveal-left,
+        .reveal-right,
+        .reveal-scale {
+            opacity: 0;
+        }
+
+        .reveal-left {
+            transform: translateX(-50px);
+        }
+
+        .reveal-right {
+            transform: translateX(50px);
+        }
+
+        .reveal-scale {
+            transform: scale(0.95);
+        }
+
+        .logo-aya {
+            filter: brightness(0) invert(1);
+            height: 30px;
+            width: auto;
+            flex-shrink: 0;
+            object-fit: contain;
+        }
+
+        /* Custom Styles for Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, rgba(244, 114, 182, 0.2), rgba(124, 58, 237, 0.2));
+            padding: 1rem;
+            text-align: center;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            border-bottom: 2px solid rgba(244, 114, 182, 0.3);
+        }
+
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .comparison-table td:first-child {
+            text-align: left;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-free {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .badge-plus {
+            background: rgba(168, 85, 247, 0.2);
+            color: #c084fc;
+        }
+
+        .badge-pro {
+            background: rgba(236, 72, 153, 0.2);
+            color: #f472b6;
+        }
+
+        .badge-ultra {
+            background: linear-gradient(135deg, #f59e0b, #ec4899, #8b5cf6);
+            color: #fff;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Mobile-specific adjustments */
+        @media (max-width: 640px) {
+            .glass-card {
+                padding: 1.5rem !important;
+            }
+
+            .comparison-table {
+                font-size: 0.875rem;
+            }
+
+            .comparison-table td:first-child {
+                position: sticky;
+                left: 0;
+                background: rgba(3, 7, 18, 0.95);
+                z-index: 10;
+                min-width: 120px;
+                padding-right: 0.75rem;
+            }
+
+            .comparison-table th:first-child {
+                position: sticky;
+                left: 0;
+                background: linear-gradient(135deg, rgba(244, 114, 182, 0.25), rgba(124, 58, 237, 0.25));
+                z-index: 11;
+                min-width: 120px;
+            }
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-rose-500/30">
+
+    <!-- [COMPONENT] Custom Cursor -->
+    <div class="custom-cursor hidden md:block"></div>
+    <div class="progress-bar"></div>
+
+    <!-- [LAYOUT] Header / Navigation -->
+    <header class="fixed top-0 left-0 w-full p-6 z-50 flex justify-between items-center mix-blend-difference">
+        <a href="index.html"
+            class="magnetic-btn flex items-center gap-2 text-sm font-bold tracking-widest uppercase hover:text-rose-400 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Voltar
+        </a>
+    </header>
+
+    <!-- [SECTION] Hero -->
+    <section class="min-h-screen relative flex items-center justify-center p-6 hero-gradient overflow-hidden">
+        <!-- Floating Objects -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-[100px] animate-pulse">
+            </div>
+            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-rose-500/10 rounded-full blur-[100px] animate-pulse"
+                style="animation-delay: 2s"></div>
+        </div>
+
+        <!-- Particles Container -->
+        <div id="particles" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-7xl mx-auto w-full text-center">
+            <!-- Badge -->
+            <div
+                class="floating-badge inline-flex items-center gap-4 px-5 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md mb-10">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></div>
+                    <span class="text-xs font-bold tracking-widest uppercase text-slate-300">Guia Completo 2026</span>
+                </div>
+
+                <div class="flex items-center gap-3 border-l border-white/20 pl-4">
+                    <span class="text-[9px] text-slate-500 font-black uppercase tracking-widest">Powered by</span>
+                    <img src="assets/img/AYA.png" alt="AYA" class="logo-aya">
+                </div>
+            </div>
+
+            <!-- Title -->
+            <div class="hero-title mb-10">
+                <h1 class="text-5xl md:text-8xl font-black leading-[0.9] tracking-tight text-white mb-4 block">
+                    Google NotebookLM
+                </h1>
+                <span class="text-5xl md:text-8xl font-black leading-[0.9] tracking-tight block gradient-text">
+                    Planos e Recursos
+                </span>
+            </div>
+
+            <!-- Description -->
+            <p
+                class="hero-subtitle text-xl md:text-2xl text-slate-400 max-w-4xl mx-auto font-light leading-relaxed mb-16 opacity-0">
+                Guia definitivo dos planos NotebookLM: do Free ao Ultra. Descubra limites, funcionalidades e qual plano
+                escolher para suas necessidades.
+            </p>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div
+            class="scroll-indicator absolute bottom-10 w-full flex flex-col items-center justify-center gap-2 text-slate-500 z-20">
+            <span class="text-[10px] uppercase tracking-[0.3em] font-bold">Scroll para explorar</span>
+            <svg class="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- [COMPONENT] Mini Summary -->
+    <div class="max-w-5xl mx-auto -mt-10 px-6 relative z-30 mb-24">
+        <div class="glass-card p-2 rounded-2xl border border-white/10 shadow-2xl backdrop-blur-xl">
+            <div class="grid grid-cols-2 gap-2 md:flex md:flex-row md:justify-between">
+                <a href="#intro"
+                    class="group flex-1 flex items-center gap-3 px-6 py-4 rounded-xl hover:bg-white/5 transition-all">
+                    <span
+                        class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">01</span>
+                    <div class="flex flex-col">
+                        <span
+                            class="text-[10px] uppercase tracking-widest text-slate-500 group-hover:text-blue-300">Essencial</span>
+                        <span class="text-sm font-bold text-white">Introdução</span>
+                    </div>
+                </a>
+                <div class="hidden md:block w-px bg-white/10 my-4"></div>
+
+                <a href="#novidades"
+                    class="group flex-1 flex items-center gap-3 px-6 py-4 rounded-xl hover:bg-white/5 transition-all">
+                    <span
+                        class="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:scale-110 transition-transform">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </span>
+                    <div class="flex flex-col">
+                        <span
+                            class="text-[10px] uppercase tracking-widest text-slate-500 group-hover:text-cyan-300">Recursos</span>
+                        <span class="text-sm font-bold text-white">Novidades</span>
+                    </div>
+                </a>
+                <div class="hidden md:block w-px bg-white/10 my-4"></div>
+
+                <a href="#comparativo"
+                    class="group flex-1 flex items-center gap-3 px-6 py-4 rounded-xl hover:bg-white/5 transition-all">
+                    <span
+                        class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">02</span>
+                    <div class="flex flex-col">
+                        <span
+                            class="text-[10px] uppercase tracking-widest text-slate-500 group-hover:text-purple-300">Análise</span>
+                        <span class="text-sm font-bold text-white">Comparativo</span>
+                    </div>
+                </a>
+                <div class="hidden md:block w-px bg-white/10 my-4"></div>
+
+                <a href="#planos"
+                    class="group flex-1 flex items-center gap-3 px-6 py-4 rounded-xl hover:bg-white/5 transition-all">
+                    <span
+                        class="w-8 h-8 rounded-lg bg-rose-500/20 flex items-center justify-center text-rose-400 group-hover:scale-110 transition-transform">03</span>
+                    <div class="flex flex-col">
+                        <span
+                            class="text-[10px] uppercase tracking-widest text-slate-500 group-hover:text-rose-300">Detalhes</span>
+                        <span class="text-sm font-bold text-white">Cada Plano</span>
+                    </div>
+                </a>
+                <div class="hidden md:block w-px bg-white/10 my-4"></div>
+
+                <a href="#recomendacoes"
+                    class="group flex-1 flex items-center gap-3 px-6 py-4 rounded-xl hover:bg-white/5 transition-all">
+                    <span
+                        class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">04</span>
+                    <div class="flex flex-col">
+                        <span
+                            class="text-[10px] uppercase tracking-widest text-slate-500 group-hover:text-amber-300">Decisão</span>
+                        <span class="text-sm font-bold text-white">Qual Escolher</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- [SECTION] Introduction -->
+    <section id="intro" class="py-32 px-6 relative">
+        <div class="max-w-5xl mx-auto">
+            <div class="reveal-section mb-16">
+                <span class="text-xs font-black text-rose-400 uppercase tracking-[0.3em] mb-4 block">O que é
+                    NotebookLM</span>
+                <h2 class="text-4xl md:text-6xl font-black mb-8 text-white leading-tight">
+                    Seu Assistente de Pesquisa <span class="gradient-text">Ancorado em IA</span>
+                </h2>
+                <div class="space-y-6 text-slate-300 text-lg leading-relaxed">
+                    <p>
+                        O <strong class="text-white">Google NotebookLM</strong> é um assistente de pesquisa pessoal
+                        alimentado por IA, projetado para transformar a maneira como você interage com informações.
+                        Diferente de chatbots generalistas como ChatGPT ou Claude, o NotebookLM opera com uma
+                        arquitetura fundamentalmente <strong class="text-rose-400">ancorada em fontes
+                            (grounded)</strong>.
+                    </p>
+                    <p>
+                        Isso significa que <strong>100% das respostas</strong> são baseadas exclusivamente nos
+                        documentos que você fornece — PDFs, Google Docs, URLs, vídeos do YouTube — criando um
+                        ecossistema de conhecimento fechado e controlado por você.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature Cards -->
+            <div class="feature-grid mt-16">
+                <div class="glass-card p-8 rounded-2xl reveal-scale">
+                    <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Zero Alucinações</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Respostas 100% baseadas em suas fontes. Se a informação não está nos documentos, o sistema
+                        responde "Não sei" — garantindo confiabilidade total.
+                    </p>
+                </div>
+
+                <div class="glass-card p-8 rounded-2xl reveal-scale" style="transition-delay: 0.1s;">
+                    <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Audio Overviews</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Transforme documentos densos em podcasts automáticos. Duas vozes de IA debatem seu conteúdo em
+                        50+ idiomas — <strong>exclusivo do NotebookLM</strong>.
+                    </p>
+                </div>
+
+                <div class="glass-card p-8 rounded-2xl reveal-scale" style="transition-delay: 0.2s;">
+                    <div class="w-12 h-12 rounded-xl bg-rose-500/20 flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Citações Auditáveis</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Cada afirmação vem com citações inline que remetem ao trecho exato da fonte original — perfeito
+                        para trabalhos acadêmicos e jurídicos.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [SECTION] Advanced Features 2025/2026 -->
+    <section id="novidades"
+        class="py-32 px-6 relative bg-gradient-to-b from-transparent via-purple-900/10 to-transparent">
+        <div class="max-w-6xl mx-auto">
+            <div class="reveal-section text-center mb-16">
+                <span class="text-xs font-black text-purple-400 uppercase tracking-[0.3em] mb-4 block">Novidades
+                    2025/2026</span>
+                <h2 class="text-4xl md:text-6xl font-black mb-6 text-white">
+                    Funcionalidades <span class="gradient-text">Avançadas</span>
+                </h2>
+                <p class="text-slate-400 text-lg max-w-3xl mx-auto">
+                    O NotebookLM evoluiu de um organizador de notas para um sistema completo de <strong
+                        class="text-white">inteligência de pesquisa ativa e criação multimodal</strong>.
+                </p>
+            </div>
+
+            <!-- Advanced Features Grid -->
+            <div class="space-y-8">
+                <!-- Deep Research & Discovery Agents -->
+                <div class="glass-card p-10 rounded-3xl reveal-left">
+                    <div class="flex items-start gap-6 mb-6">
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-3xl font-bold text-white mb-4">🔍 Pesquisa Profunda e Agentes de Descoberta
+                            </h3>
+                            <p class="text-slate-300 mb-6 leading-relaxed">
+                                Uma das atualizações mais significativas: o NotebookLM agora atua como um <strong
+                                    class="text-blue-400">agente autônomo de pesquisa</strong>.
+                            </p>
+
+                            <div class="space-y-4">
+                                <div class="bg-white/5 p-6 rounded-xl border border-blue-500/20">
+                                    <h4 class="text-xl font-bold text-blue-400 mb-3">Deep Research (Pesquisa Profunda)
+                                    </h4>
+                                    <p class="text-slate-300 text-sm leading-relaxed">
+                                        O sistema cria um <strong>plano de investigação autônomo</strong>, consulta
+                                        centenas de fontes online, avalia a qualidade da informação e sintetiza um
+                                        <strong>relatório completo fundamentado em evidências</strong>, que é adicionado
+                                        diretamente ao seu notebook.
+                                    </p>
+                                </div>
+
+                                <div class="bg-white/5 p-6 rounded-xl border border-purple-500/20">
+                                    <h4 class="text-xl font-bold text-purple-400 mb-3">Fast Research (Pesquisa Rápida)
+                                    </h4>
+                                    <p class="text-slate-300 text-sm leading-relaxed">
+                                        Varreduras rápidas na internet para fornecer <strong>fatos básicos e links
+                                            imediatos</strong> sem a profundidade do Deep Research.
+                                    </p>
+                                </div>
+
+                                <div class="bg-white/5 p-6 rounded-xl border border-rose-500/20">
+                                    <h4 class="text-xl font-bold text-rose-400 mb-3">Agente de Descoberta (Discovery
+                                        Agent)</h4>
+                                    <p class="text-slate-300 text-sm leading-relaxed">
+                                        O NotebookLM pode <strong>vasculhar proativamente o seu Google Drive</strong>
+                                        para encontrar fontes relevantes baseadas no seu projeto atual.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Multimodal Studio -->
+                <div class="glass-card p-10 rounded-3xl reveal-right">
+                    <div class="flex items-start gap-6 mb-6">
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-3xl font-bold text-white mb-4">🎬 Estúdio Multimodal Avançado (Áudio e
+                                Vídeo)</h3>
+                            <p class="text-slate-300 mb-6 leading-relaxed">
+                                A ferramenta expandiu massivamente suas capacidades de <strong
+                                    class="text-purple-400">geração de mídia</strong>, indo além do texto.
+                            </p>
+
+                            <div class="space-y-4">
+                                <div
+                                    class="bg-gradient-to-r from-purple-500/10 to-pink-500/10 p-6 rounded-xl border border-purple-500/30">
+                                    <h4 class="text-xl font-bold text-purple-400 mb-3">🎙️ Audio Overviews Interativos
+                                    </h4>
+                                    <ul class="space-y-2 text-slate-300 text-sm">
+                                        <li class="flex items-start gap-2">
+                                            <span class="text-purple-400 mt-1">•</span>
+                                            <span><strong>Modo Interativo:</strong> Você pode "entrar na conversa" em
+                                                tempo real, fazendo perguntas aos apresentadores de IA ou pedindo
+                                                esclarecimentos durante o podcast</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <span class="text-purple-400 mt-1">•</span>
+                                            <span><strong>50+ idiomas</strong> suportados para geração de áudio</span>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div
+                                    class="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 p-6 rounded-xl border border-blue-500/30">
+                                    <h4 class="text-xl font-bold text-blue-400 mb-3">🎚️ Novos Modos de Áudio</h4>
+                                    <div class="grid grid-cols-2 gap-3 mt-3">
+                                        <div class="bg-white/5 p-3 rounded-lg">
+                                            <strong class="text-cyan-400">Deep Dive</strong>
+                                            <p class="text-xs text-slate-400 mt-1">Análise aprofundada</p>
+                                        </div>
+                                        <div class="bg-white/5 p-3 rounded-lg">
+                                            <strong class="text-cyan-400">Brief</strong>
+                                            <p class="text-xs text-slate-400 mt-1">Resumo rápido</p>
+                                        </div>
+                                        <div class="bg-white/5 p-3 rounded-lg">
+                                            <strong class="text-cyan-400">Critique</strong>
+                                            <p class="text-xs text-slate-400 mt-1">Análise crítica de argumentos</p>
+                                        </div>
+                                        <div class="bg-white/5 p-3 rounded-lg">
+                                            <strong class="text-cyan-400">Debate</strong>
+                                            <p class="text-xs text-slate-400 mt-1">Confronto dialético de ideias</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="bg-gradient-to-r from-rose-500/10 to-orange-500/10 p-6 rounded-xl border border-rose-500/30">
+                                    <h4 class="text-xl font-bold text-rose-400 mb-3">📹 Video Overviews (Novo 2025)</h4>
+                                    <p class="text-slate-300 text-sm leading-relaxed">
+                                        Gera <strong>vídeos explicativos narrados</strong> usando o modelo de imagem
+                                        <strong class="text-orange-400">Nano Banana Pro</strong>. Cria apresentações
+                                        visuais, infográficos e layouts dinâmicos para acompanhar a narração de IA sobre
+                                        o seu conteúdo.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personalization & Learning -->
+                <div class="glass-card p-10 rounded-3xl reveal-left">
+                    <div class="flex items-start gap-6 mb-6">
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-rose-500/20 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-8 h-8 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-3xl font-bold text-white mb-4">🎓 Personalização do Chat e Guias de Estudo
+                            </h3>
+                            <p class="text-slate-300 mb-6 leading-relaxed">
+                                A interação via chat tornou-se <strong class="text-rose-400">altamente
+                                    configurável</strong> para atender a diferentes perfis.
+                            </p>
+
+                            <div class="space-y-4">
+                                <div class="bg-white/5 p-6 rounded-xl border border-rose-500/20">
+                                    <h4 class="text-xl font-bold text-rose-400 mb-3">⚙️ Configuração de Chat</h4>
+                                    <p class="text-slate-300 text-sm mb-4">Ajuste o tom e comprimento das respostas:</p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span
+                                            class="px-3 py-1 bg-rose-500/20 text-rose-300 rounded-full text-xs">Humorístico</span>
+                                        <span
+                                            class="px-3 py-1 bg-rose-500/20 text-rose-300 rounded-full text-xs">Direto</span>
+                                        <span
+                                            class="px-3 py-1 bg-rose-500/20 text-rose-300 rounded-full text-xs">Formal</span>
+                                        <span
+                                            class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs">Respostas
+                                            Curtas</span>
+                                        <span
+                                            class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs">Respostas
+                                            Longas</span>
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="bg-gradient-to-r from-amber-500/10 to-orange-500/10 p-6 rounded-xl border border-amber-500/30">
+                                    <h4 class="text-xl font-bold text-amber-400 mb-3">👨‍🏫 Learning Guide (Guia de
+                                        Aprendizagem)</h4>
+                                    <p class="text-slate-300 text-sm leading-relaxed">
+                                        Atua como um <strong>tutor pessoal</strong>. Em vez de apenas dar a resposta,
+                                        ele faz <strong class="text-amber-400">perguntas sondadoras e abertas</strong>
+                                        para guiar o usuário na compreensão de conceitos complexos (método socrático).
+                                    </p>
+                                </div>
+
+                                <div class="bg-white/5 p-6 rounded-xl border border-blue-500/20">
+                                    <h4 class="text-xl font-bold text-blue-400 mb-3">📚 Geração Automática de Materiais
+                                    </h4>
+                                    <p class="text-slate-300 text-sm mb-3">Criação instantânea baseada nas suas fontes:
+                                    </p>
+                                    <ul class="grid grid-cols-2 gap-2 text-sm text-slate-300">
+                                        <li class="flex items-center gap-2">
+                                            <span class="text-blue-400">✓</span> Flashcards (cartões de memória)
+                                        </li>
+                                        <li class="flex items-center gap-2">
+                                            <span class="text-blue-400">✓</span> Quizzes (testes)
+                                        </li>
+                                        <li class="flex items-center gap-2">
+                                            <span class="text-blue-400">✓</span> Guias de Estudo
+                                        </li>
+                                        <li class="flex items-center gap-2">
+                                            <span class="text-blue-400">✓</span> Glossários
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visualization & Document Creation -->
+                <div class="glass-card p-10 rounded-3xl reveal-right">
+                    <div class="flex items-start gap-6 mb-6">
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-3xl font-bold text-white mb-4">📊 Visualização e Criação de Documentos</h3>
+                            <p class="text-slate-300 mb-6 leading-relaxed">
+                                Ferramentas para <strong class="text-green-400">estruturação visual do
+                                    pensamento</strong> e apresentação profissional.
+                            </p>
+
+                            <div class="space-y-4">
+                                <div
+                                    class="bg-gradient-to-r from-green-500/10 to-emerald-500/10 p-6 rounded-xl border border-green-500/30">
+                                    <h4 class="text-xl font-bold text-green-400 mb-3">🗺️ Mapas Mentais Interativos</h4>
+                                    <p class="text-slate-300 text-sm leading-relaxed">
+                                        Gera <strong>diagramas visuais que conectam conceitos</strong> dentro das suas
+                                        fontes. Ao clicar nos nós do mapa, você pode ver resumos detalhados ou ir direto
+                                        para a citação original.
+                                    </p>
+                                </div>
+
+                                <div
+                                    class="bg-gradient-to-r from-purple-500/10 to-pink-500/10 p-6 rounded-xl border border-purple-500/30">
+                                    <h4 class="text-xl font-bold text-purple-400 mb-3">🎨 Slides e Infográficos (Nano
+                                        Banana Pro)</h4>
+                                    <p class="text-slate-300 text-sm leading-relaxed mb-3">
+                                        Transforme suas notas e pesquisas em <strong class="text-pink-400">apresentações
+                                            de slides ou infográficos visuais profissionais</strong>.
+                                    </p>
+                                    <div class="bg-amber-500/20 border border-amber-500/40 rounded-lg p-3">
+                                        <p class="text-amber-200 text-xs flex items-start gap-2">
+                                            <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                            </svg>
+                                            <span><strong>Plano Ultra:</strong> Remoção de marca d'água para uso
+                                                profissional externo</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Source Types -->
+                <div class="glass-card p-10 rounded-3xl reveal-left">
+                    <div class="flex items-start gap-6 mb-6">
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-3xl font-bold text-white mb-4">📥 Novos Tipos de Fontes e Integrações</h3>
+                            <p class="text-slate-300 mb-6 leading-relaxed">
+                                A capacidade de ingestão de dados foi <strong class="text-cyan-400">ampliada
+                                    massivamente</strong> para suportar fluxos de trabalho complexos.
+                            </p>
+
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div class="bg-white/5 p-5 rounded-xl border border-cyan-500/20">
+                                    <h4 class="text-lg font-bold text-cyan-400 mb-3">📊 Google Sheets</h4>
+                                    <p class="text-slate-300 text-sm">Análise de dados estruturados e tabelas
+                                        diretamente</p>
+                                </div>
+
+                                <div class="bg-white/5 p-5 rounded-xl border border-purple-500/20">
+                                    <h4 class="text-lg font-bold text-purple-400 mb-3">🎵 Arquivos de Áudio</h4>
+                                    <p class="text-slate-300 text-sm">MP3/WAV com transcrição automática</p>
+                                </div>
+
+                                <div class="bg-white/5 p-5 rounded-xl border border-rose-500/20">
+                                    <h4 class="text-lg font-bold text-rose-400 mb-3">🖼️ Imagens</h4>
+                                    <p class="text-slate-300 text-sm">Incluindo notas manuscritas (OCR)</p>
+                                </div>
+
+                                <div class="bg-white/5 p-5 rounded-xl border border-blue-500/20">
+                                    <h4 class="text-lg font-bold text-blue-400 mb-3">📄 Microsoft Word (.docx)</h4>
+                                    <p class="text-slate-300 text-sm">Suporte nativo completo</p>
+                                </div>
+
+                                <div class="bg-white/5 p-5 rounded-xl border border-amber-500/20">
+                                    <h4 class="text-lg font-bold text-amber-400 mb-3">🎓 Google Classroom</h4>
+                                    <p class="text-slate-300 text-sm">Professores podem criar e atribuir notebooks
+                                        diretamente</p>
+                                </div>
+
+                                <div class="bg-white/5 p-5 rounded-xl border border-red-500/20">
+                                    <h4 class="text-lg font-bold text-red-400 mb-3">▶️ Extensão YouTube</h4>
+                                    <p class="text-slate-300 text-sm">Adicione vídeos inteiros ou playlists com um
+                                        clique</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Evolution Summary -->
+                <div class="relative p-10 rounded-3xl overflow-hidden reveal-scale"
+                    style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(168, 85, 247, 0.15));">
+                    <div class="relative z-10">
+                        <h3 class="text-3xl font-bold text-white mb-6 text-center">💡 Em Resumo</h3>
+                        <div class="bg-black/30 p-8 rounded-2xl border border-white/10">
+                            <p class="text-white text-lg leading-relaxed text-center mb-4">
+                                <strong class="gradient-text text-2xl">De estagiário inteligente a equipe
+                                    completa</strong>
+                            </p>
+                            <p class="text-slate-300 leading-relaxed text-center max-w-4xl mx-auto">
+                                Pense na versão anterior do NotebookLM como um estagiário inteligente que lia seus PDFs
+                                e fazia resumos.
+                                <strong class="text-white">A versão de 2025/2026 evoluiu para ser uma equipe completa de
+                                    produção multimídia e pesquisa investigativa</strong>,
+                                capaz de não apenas ler, mas também <span class="text-blue-400">ouvir</span>, <span
+                                    class="text-purple-400">ver</span>,
+                                <span class="text-rose-400">debater</span>, <span class="text-green-400">criar
+                                    vídeos</span> e
+                                <span class="text-amber-400">vasculhar a internet profundamente</span> para complementar
+                                o seu conhecimento.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [SECTION] Comparison Table -->
+    <section id="comparativo"
+        class="py-32 px-6 relative bg-gradient-to-b from-transparent via-slate-900/20 to-transparent">
+        <div class="max-w-7xl mx-auto">
+            <div class="reveal-section text-center mb-16">
+                <span class="text-xs font-black text-purple-400 uppercase tracking-[0.3em] mb-4 block">Comparativo
+                    Completo</span>
+                <h2 class="text-4xl md:text-6xl font-black mb-6 text-white">
+                    Do <span class="text-blue-400">Free</span> ao <span class="gradient-text">Ultra</span>
+                </h2>
+                <p class="text-slate-400 text-lg max-w-3xl mx-auto">
+                    Tabela comparativa oficial dos 4 planos NotebookLM. Informações validadas pelo Google Support.
+                </p>
+            </div>
+
+            <div class="glass-card p-1 rounded-3xl overflow-hidden reveal-scale">
+                <div class="overflow-x-auto">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th class="text-left">Recurso</th>
+                                <th><span class="badge badge-free">Standard</span><br><span
+                                        class="text-xs text-slate-500 normal-case mt-1 block">Grátis</span></th>
+                                <th><span class="badge badge-plus">Plus</span><br><span
+                                        class="text-xs text-slate-500 normal-case mt-1 block">Google AI Plus</span></th>
+                                <th><span class="badge badge-pro">Pro</span><br><span
+                                        class="text-xs text-slate-500 normal-case mt-1 block">Google AI Pro</span></th>
+                                <th><span class="badge badge-ultra">Ultra</span><br><span
+                                        class="text-xs text-slate-500 normal-case mt-1 block">Google AI Ultra</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Notebooks</td>
+                                <td class="text-slate-300">100/usuário</td>
+                                <td class="text-slate-300">200/usuário</td>
+                                <td class="text-slate-300">500/usuário</td>
+                                <td class="text-slate-300">500/usuário</td>
+                            </tr>
+                            <tr>
+                                <td>Fontes por Notebook</td>
+                                <td class="text-slate-300">50</td>
+                                <td class="text-slate-300">100</td>
+                                <td class="text-slate-300">300</td>
+                                <td class="text-rose-400 font-bold">600</td>
+                            </tr>
+                            <tr>
+                                <td>Chats por Dia</td>
+                                <td class="text-slate-300">50</td>
+                                <td class="text-slate-300">200</td>
+                                <td class="text-slate-300">500</td>
+                                <td class="text-rose-400 font-bold">5.000</td>
+                            </tr>
+                            <tr>
+                                <td>Audio Overviews/dia</td>
+                                <td class="text-slate-300">3</td>
+                                <td class="text-slate-300">6</td>
+                                <td class="text-slate-300">20</td>
+                                <td class="text-rose-400 font-bold">200</td>
+                            </tr>
+                            <tr>
+                                <td>Video Overviews/dia</td>
+                                <td class="text-slate-300">3</td>
+                                <td class="text-slate-300">6</td>
+                                <td class="text-slate-300">20</td>
+                                <td class="text-rose-400 font-bold">200</td>
+                            </tr>
+                            <tr>
+                                <td>Deep Research</td>
+                                <td class="text-yellow-400">10/mês</td>
+                                <td class="text-slate-300">3/dia</td>
+                                <td class="text-slate-300">20/dia</td>
+                                <td class="text-rose-400 font-bold">200/dia</td>
+                            </tr>
+                            <tr>
+                                <td>Reports/dia</td>
+                                <td class="text-slate-300">10</td>
+                                <td class="text-slate-300">20</td>
+                                <td class="text-slate-300">100</td>
+                                <td class="text-rose-400 font-bold">1.000</td>
+                            </tr>
+                            <tr>
+                                <td>Flashcards/dia</td>
+                                <td class="text-slate-300">10</td>
+                                <td class="text-slate-300">20</td>
+                                <td class="text-slate-300">100</td>
+                                <td class="text-rose-400 font-bold">1.000</td>
+                            </tr>
+                            <tr>
+                                <td>Quizzes/dia</td>
+                                <td class="text-slate-300">10</td>
+                                <td class="text-slate-300">20</td>
+                                <td class="text-slate-300">100</td>
+                                <td class="text-rose-400 font-bold">1.000</td>
+                            </tr>
+                            <tr>
+                                <td>Mind Maps</td>
+                                <td class="text-green-400" colspan="4">Sem limites em todos os planos</td>
+                            </tr>
+                            <tr>
+                                <td>Infográficos</td>
+                                <td class="text-slate-500">Limitado</td>
+                                <td class="text-slate-400">Mais limites</td>
+                                <td class="text-slate-300">Limites maiores</td>
+                                <td class="text-rose-400">Limites máximos</td>
+                            </tr>
+                            <tr>
+                                <td>Slides</td>
+                                <td class="text-slate-500">Limitado</td>
+                                <td class="text-slate-400">Mais limites</td>
+                                <td class="text-slate-300">Limites maiores</td>
+                                <td class="text-rose-400">Limites máximos</td>
+                            </tr>
+                            <tr>
+                                <td>Acesso a Modelos Gemini</td>
+                                <td class="text-slate-400">Acesso</td>
+                                <td class="text-slate-300">Acesso</td>
+                                <td class="text-purple-400">Acesso maior</td>
+                                <td class="text-rose-400 font-bold">Acesso máximo</td>
+                            </tr>
+                            <tr>
+                                <td>Acesso Antecipado</td>
+                                <td class="text-slate-500">Padrão</td>
+                                <td class="text-purple-400">Antecipado</td>
+                                <td class="text-rose-400">Prioritário</td>
+                                <td class="text-rose-400 font-bold">Prioritário</td>
+                            </tr>
+                            <tr>
+                                <td>Remoção Marca d'Água</td>
+                                <td class="text-slate-500">Não</td>
+                                <td class="text-slate-500">Não</td>
+                                <td class="text-slate-500">Não</td>
+                                <td class="text-green-400 font-bold">✅ Sim (Slides e Infográficos)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center">
+                <p class="text-xs text-slate-500 italic">
+                    * Limites sujeitos a alterações. Informações atualizadas em Janeiro de 2026.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- [SECTION] Detailed Plans -->
+    <section id="planos" class="py-32 px-6 relative">
+        <div class="max-w-6xl mx-auto">
+            <div class="reveal-section text-center mb-20">
+                <span class="text-xs font-black text-rose-400 uppercase tracking-[0.3em] mb-4 block">Análise
+                    Detalhada</span>
+                <h2 class="text-4xl md:text-6xl font-black mb-6 text-white">
+                    Entenda <span class="gradient-text">Cada Plano</span>
+                </h2>
+            </div>
+
+            <!-- Standard Plan -->
+            <div class="glass-card p-10 rounded-3xl mb-8 reveal-left">
+                <div class="flex items-center gap-4 mb-6">
+                    <span class="badge badge-free text-lg px-4 py-2">Standard (Grátis)</span>
+                    <span class="text-2xl font-black text-white">$0/mês</span>
+                </div>
+
+                <h3 class="text-2xl font-bold text-white mb-4">Para Quem É</h3>
+                <p class="text-slate-300 mb-6 leading-relaxed">
+                    Estudantes, pesquisadores ocasionais e usuários explorando as capacidades do NotebookLM. Ideal para
+                    projetos menores e uso esporádico.
+                </p>
+
+                <h4 class="text-lg font-bold text-rose-400 mb-3">⚠️ Limitações Principais</h4>
+                <ul class="space-y-2 text-slate-400 mb-6">
+                    <li class="flex items-start gap-2">
+                        <span class="text-yellow-400 mt-1">▸</span>
+                        <span><strong>50 chats/dia</strong> — pode ser restritivo para pesquisa intensiva
+                            (aproximadamente 2 conversas longas)</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-yellow-400 mt-1">▸</span>
+                        <span><strong>10 Deep Research/mês</strong> — apenas ~1 pesquisa profunda a cada 3 dias</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-yellow-400 mt-1">▸</span>
+                        <span><strong>10 reports/flashcards/quizzes por dia</strong> — limitante para criação intensiva
+                            de materiais de estudo</span>
+                    </li>
+                </ul>
+
+                <h4 class="text-lg font-bold text-green-400 mb-3">✅ Vantagens</h4>
+                <ul class="space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                        <span class="text-green-400 mt-1">✓</span>
+                        <span>Acesso gratuito a todas as funcionalidades essenciais, incluindo Audio/Video
+                            Overviews</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-green-400 mt-1">✓</span>
+                        <span>50 fontes por notebook (suficiente para projetos acadêmicos padrão)</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-green-400 mt-1">✓</span>
+                        <span>Sem custo — teste completo antes de fazer upgrade</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Plus Plan -->
+            <div class="glass-card p-10 rounded-3xl mb-8 reveal-right">
+                <div class="flex items-center gap-4 mb-6">
+                    <span class="badge badge-plus text-lg px-4 py-2">Plus</span>
+                    <span class="text-slate-400 text-sm">Incluído em Google AI Plus ou Workspace</span>
+                </div>
+
+                <h3 class="text-2xl font-bold text-white mb-4">Para Quem É</h3>
+                <p class="text-slate-300 mb-6 leading-relaxed">
+                    Usuários intermediários e profissionais iniciantes que precisam de capacidade ampliada. Ideal para
+                    quem usa NotebookLM regularmente mas não intensivamente.
+                </p>
+
+                <h4 class="text-lg font-bold px text-purple-400 mb-3">📊 Recursos Ampliados</h4>
+                <ul class="space-y-2 text-slate-300 mb-6">
+                    <li class="flex items-start gap-2">
+                        <span class="text-purple-400 mt-1">▸</span>
+                        <span><strong>200 notebooks</strong> (vs 100 no Free) — gerenciar mais projetos
+                            simultaneamente</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-purple-400 mt-1">▸</span>
+                        <span><strong>100 fontes por notebook</strong> (vs 50) — análises mais complexas</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-purple-400 mt-1">▸</span>
+                        <span><strong>200 chats/dia</strong> — 4x mais interações que o Free</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-purple-400 mt-1">▸</span>
+                        <span><strong>3 Deep Research por dia</strong> (90/mês) — pesquisa profunda diária</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-purple-400 mt-1">▸</span>
+                        <span><strong>6 Audio/Video Overviews/dia</strong> — produção moderada de conteúdo</span>
+                    </li>
+                </ul>
+
+                <h4 class="text-lg font-bold text-blue-400 mb-3">🌟 Diferenciais</h4>
+                <ul class="space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                        <span class="text-blue-400 mt-1">✓</span>
+                        <span><strong>Acesso antecipado</strong> a novos recursos antes do plano gratuito</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-blue-400 mt-1">✓</span>
+                        <span><strong>Compartilhamento avançado</strong> de notebooks com controles de permissão</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Pro Plan -->
+            <div class="glass-card p-10 rounded-3xl mb-8 reveal-left border-2 border-rose-500/30">
+                <div class="flex items-center gap-4 mb-6">
+                    <span class="badge badge-pro text-lg px-4 py-2">Pro</span>
+                    <span class="text-2xl font-black gradient-text">Recomendado</span>
+                </div>
+
+                <h3 class="text-2xl font-bold text-white mb-4">Para Quem É</h3>
+                <p class="text-slate-300 mb-6 leading-relaxed">
+                    Profissionais dedicados, pesquisadores intensivos e criadores de conteúdo que dependem do NotebookLM
+                    no dia a dia. Melhor custo-benefício para uso profissional.
+                </p>
+
+                <h4 class="text-lg font-bold text-rose-400 mb-3">💼 Recursos Profissionais</h4>
+                <ul class="space-y-2 text-slate-300 mb-6">
+                    <li class="flex items-start gap-2">
+                        <span class="text-rose-400 mt-1">▸</span>
+                        <span><strong>500 notebooks, 300 fontes por notebook</strong> — capacidade massiva</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-rose-400 mt-1">▸</span>
+                        <span><strong>500 chats/dia</strong> — trabalho profissional sem interrupções</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-rose-400 mt-1">▸</span>
+                        <span><strong>20 Audio/Video Overviews/dia</strong> — criação de conteúdo em escala</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-rose-400 mt-1">▸</span>
+                        <span><strong>20 Deep Research/dia (600/mês)</strong> — pesquisa profunda ilimitada na
+                            prática</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-rose-400 mt-1">▸</span>
+                        <span><strong>100 reports/flashcards/quizzes por dia</strong> — criação massiva de
+                            materiais</span>
+                    </li>
+                </ul>
+
+                <h4 class="text-lg font-bold text-purple-400 mb-3">🚀 Acesso Prioritário</h4>
+                <ul class="space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                        <span class="text-purple-400 mt-1">✓</span>
+                        <span><strong>Modelos Gemini de maior capacidade</strong> — respostas mais sofisticadas</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-purple-400 mt-1">✓</span>
+                        <span><strong>Recursos novos primeiro</strong> — beta tester oficial do Google</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Ultra Plan -->
+            <div class="glass-card p-10 rounded-3xl reveal-right"
+                style="background: linear-gradient(135deg, rgba(244, 114, 182, 0.1), rgba(124, 58, 237, 0.1)); border: 2px solid rgba(244, 114, 182, 0.4);">
+                <div class="flex items-center gap-4 mb-6">
+                    <span class="badge badge-ultra text-lg px-4 py-2">Ultra</span>
+                    <span class="text-xl font-black text-white">👑 Power Users</span>
+                </div>
+
+                <h3 class="text-2xl font-bold text-white mb-4">Para Quem É</h3>
+                <p class="text-slate-300 mb-6 leading-relaxed">
+                    Power users, agências de conteúdo, empresas e pesquisadores que operam em escala massiva. Para quem
+                    os limites do Pro ainda são restritivos.
+                </p>
+
+                <h4 class="text-lg font-bold text-amber-400 mb-3">⚡ Recursos Máximos</h4>
+                <ul class="space-y-2 text-slate-300 mb-6">
+                    <li class="flex items-start gap-2">
+                        <span class="text-amber-400 mt-1">▸</span>
+                        <span><strong>600 fontes por notebook</strong> — máximo absoluto, ideal para pesquisas
+                            massivas</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-amber-400 mt-1">▸</span>
+                        <span><strong>5.000 chats/dia</strong> — 50x mais que o Free, 10x mais que o Pro</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-amber-400 mt-1">▸</span>
+                        <span><strong>200 Audio/Video Overviews/dia</strong> — produção industrial de conteúdo</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-amber-400 mt-1">▸</span>
+                        <span><strong>200 Deep Research/dia</strong> — pesquisa em escala enterprise</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-amber-400 mt-1">▸</span>
+                        <span><strong>1.000 reports/flashcards/quizzes/dia</strong> — criação em massa</span>
+                    </li>
+                </ul>
+
+                <h4 class="text-lg font-bold text-green-400 mb-3">✨ Exclusivo Ultra</h4>
+                <ul class="space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                        <span class="text-green-400 mt-1">✓</span>
+                        <span><strong>✅ Remoção de marca d'água</strong> em infográficos e apresentações de slides —
+                            publicação profissional sem artefatos visuais</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-green-400 mt-1">✓</span>
+                        <span><strong>Limites praticamente irrestritos</strong> para uso normal empresarial</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- [SECTION] Recommendations -->
+    <section id="recomendacoes"
+        class="py-32 px-6 relative bg-gradient-to-b from-transparent via-slate-900/30 to-transparent">
+        <div class="max-w-5xl mx-auto">
+            <div class="reveal-section text-center mb-16">
+                <span class="text-xs font-black text-amber-400 uppercase tracking-[0.3em] mb-4 block">Matriz de
+                    Decisão</span>
+                <h2 class="text-4xl md:text-6xl font-black mb-6 text-white">
+                    Qual Plano <span class="gradient-text">Escolher?</span>
+                </h2>
+                <p class="text-slate-400 text-lg max-w-3xl mx-auto">
+                    Recomendações baseadas no seu perfil e necessidades de uso.
+                </p>
+            </div>
+
+            <!-- Use Cases Cards -->
+            <div class="space-y-6">
+                <!-- Academic -->
+                <div class="glass-card p-8 rounded-2xl reveal-scale">
+                    <div class="flex items-start gap-6">
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-2xl font-bold text-white mb-3">🎓 Estudantes e Acadêmicos</h3>
+                            <div class="space-y-3 text-slate-300">
+                                <p><strong class="text-blue-400">Standard (Free)</strong> → Estudantes de graduação,
+                                    projetos pequenos, trabalhos de curso</p>
+                                <p><strong class="text-purple-400">Plus</strong> → Mestrandos, pesquisadores com
+                                    múltiplos projetos</p>
+                                <p><strong class="text-rose-400">Pro</strong> → Doutorandos, pesquisadores intensivos,
+                                    professores criando materiais didáticos</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Professional -->
+                <div class="glass-card p-8 rounded-2xl reveal-scale" style="transition-delay: 0.1s;">
+                    <div class="flex items-start gap-6">
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-2xl font-bold text-white mb-3">💼 Profissionais e Empresas</h3>
+                            <div class="space-y-3 text-slate-300">
+                                <p><strong class="text-blue-400">Standard (Free)</strong> → Teste inicial, uso
+                                    esporádico</p>
+                                <p><strong class="text-purple-400">Plus</strong> → Freelancers, consultores com volume
+                                    moderado</p>
+                                <p><strong class="text-rose-400">Pro</strong> → Profissionais dedicados, pequenas
+                                    equipes, criadores de conteúdo</p>
+                                <p><strong class="text-amber-400">Ultra</strong> → Agências, empresas, operações em
+                                    escala</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Legal/Journalism -->
+                <div class="glass-card p-8 rounded-2xl reveal-scale" style="transition-delay: 0.2s;">
+                    <div class="flex items-start gap-6">
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-rose-500/20 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-8 h-8 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-2xl font-bold text-white mb-3">⚖️ Jurídico e Jornalismo</h3>
+                            <div class="space-y-3 text-slate-300">
+                                <p><strong class="text-rose-400">Pro + Workspace</strong> → Obrigatório para
+                                    confidencialidade máxima (sem human review)</p>
+                                <p><strong class="text-blue-400">Diferencial crítico</strong> → Citações auditáveis (98%
+                                    accuracy) + grounding perfeito</p>
+                                <p><strong class="text-amber-400">Evitar</strong> → Standard com conta pessoal para
+                                    dados sensíveis (risco de human review se dar feedback)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Budget Conscious -->
+                <div class="glass-card p-8 rounded-2xl reveal-scale" style="transition-delay: 0.3s;">
+                    <div class="flex items-start gap-6">
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-2xl font-bold text-white mb-3">💰 Melhor Custo-Benefício</h3>
+                            <div class="space-y-3 text-slate-300">
+                                <p><strong class="text-blue-400">Iniciantes</strong> → Standard (Free) — teste completo
+                                    sem custo</p>
+                                <p><strong class="text-purple-400">Intermediários</strong> → Plus via Workspace
+                                    (incluído em plano corporativo)</p>
+                                <p><strong class="text-rose-400">Profissionais</strong> → Pro — ROI de ~$0.04 por chat
+                                    (500/dia = 15.000/mês)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Privacy Note -->
+            <div class="mt-16 glass-card p-8 rounded-2xl border-2 border-amber-500/30 reveal-section">
+                <div class="flex items-start gap-4">
+                    <svg class="w-6 h-6 text-amber-400 flex-shrink-0 mt-1" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <div>
+                        <h4 class="text-xl font-bold text-white mb-3">🔒 Nota Importante sobre Privacidade</h4>
+                        <div class="space-y-2 text-slate-300 text-sm leading-relaxed">
+                            <p><strong class="text-amber-400">Seus dados NÃO são usados para treinar modelos</strong> em
+                                nenhum plano (confirmado pelo Google Support).</p>
+                            <p><strong class="text-yellow-400">PORÉM:</strong> Contas pessoais (Gmail) podem ter
+                                <strong>human review</strong> se você fornecer feedback (thumbs up/down). Para dados
+                                confidenciais, use <strong>Google Workspace</strong> (zero human review garantido).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [SECTION] Verdict / Conclusion -->
+    <section id="veredicto" class="py-32 px-6 relative overflow-hidden">
+        <div class="max-w-5xl mx-auto">
+            <div class="relative rounded-[3rem] p-16 overflow-hidden reveal-scale">
+                <div class="absolute inset-0 bg-gradient-to-br from-orange-600 via-rose-600 to-purple-600"></div>
+
+                <div class="relative z-10">
+                    <h2 class="text-5xl md:text-6xl font-black mb-10 text-white">Veredito Final</h2>
+                    <div class="space-y-6 text-white/90 text-xl leading-relaxed">
+                        <p>
+                            O Google NotebookLM se destaca como uma ferramenta <strong>única</strong> no mercado de
+                            assistentes de IA, oferecendo grounding perfeito e citações auditáveis que ferramentas
+                            generalistas não conseguem igualar.
+                        </p>
+                        <p>
+                            A estrutura de planos é <strong>bem equilibrada</strong>: o plano Standard (Free) já oferece
+                            funcionalidades essenciais suficientes para uso acadêmico e pessoal, enquanto os planos
+                            pagos (Plus, Pro, Ultra) escalam perfeitamente para necessidades profissionais e
+                            empresariais.
+                        </p>
+                        <p>
+                            <strong>Recomendação geral:</strong> Comece com o Standard para explorar. Se você usa
+                            NotebookLM regularmente (3+ vezes por semana), o <span
+                                class="bg-white/20 px-2 py-1 rounded">Pro é o melhor custo-benefício</span>. Para
+                            operações em escala massiva ou dados ultra-sensíveis, considere Ultra ou Google Workspace
+                            Enterprise.
+                        </p>
+                        <p class="text-2xl font-bold mt-8">
+                            💡 A verdadeira questão não é "qual plano escolher", mas sim "como NotebookLM se encaixa no
+                            seu fluxo de trabalho".
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- [LAYOUT] Footer -->
+    <footer class="py-20 px-6 border-t border-white/10">
+        <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-12 text-slate-500">
+            <div class="reveal-section">
+                <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Metodologia</h4>
+                <p class="text-xs leading-relaxed">
+                    Este guia foi compilado utilizando informações oficiais do Google Support
+                    (support.google.com/notebooklm), validadas em Janeiro de 2026. Todos os limites de uso,
+                    funcionalidades e especificações de planos foram verificados contra a documentação oficial do
+                    Google. As recomendações são baseadas em análise técnica dos casos de uso mais comuns identificados
+                    pela comunidade NotebookLM.
+                </p>
+            </div>
+            <div class="reveal-section" style="transition-delay: 0.1s;">
+                <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Fontes</h4>
+                <p class="text-xs leading-relaxed italic">
+                    Google Support NotebookLM (support.google.com/notebooklm/answer/16213268) • Documentação oficial
+                    Google AI Plans • Análise comparativa independente AYA Tech • Validado em 05/01/2026
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Fixed Bar -->
+    <div
+        class="fixed bottom-0 left-0 w-full bg-black/80 backdrop-blur-md py-4 text-[9px] text-slate-500 font-bold uppercase tracking-[0.5em] text-center z-50 border-t border-white/5">
+        Este documento é uma análise técnica independente • Powered by AYA
+    </div>
+
+    <!-- Logo Final -->
+    <div class="pb-32 pt-12 flex flex-col justify-center items-center gap-4">
+        <img src="assets/img/AYA.png" alt="AYA Logo" class="h-20 opacity-80" style="filter: brightness(0) invert(1);">
+        <p class="text-sm font-bold uppercase tracking-[0.4em] text-slate-500">The future is intelligence</p>
+    </div>
+
+    <!-- [LOGIC] Scripts -->
+    <script>
+        // 1. Initialize Smooth Scroll (Lenis)
+        const lenis = new Lenis({ duration: 1.2, smoothWheel: true });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+
+        // 2. Register GSAP Plugins
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 3. Global Animations
+
+        // Progress Bar
+        gsap.to('.progress-bar', {
+            scaleX: 1, ease: 'none',
+            scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 0.3 }
+        });
+
+        // Reveal Sections
+        gsap.utils.toArray('.reveal-section').forEach((el) => {
+            gsap.to(el, {
+                opacity: 1, y: 0, duration: 1, ease: 'power3.out',
+                scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none reverse' }
+            });
+        });
+
+        gsap.utils.toArray('.reveal-left').forEach(el => {
+            gsap.to(el, { opacity: 1, x: 0, duration: 1.2, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 80%' } });
+        });
+
+        gsap.utils.toArray('.reveal-right').forEach(el => {
+            gsap.to(el, { opacity: 1, x: 0, duration: 1.2, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 80%' } });
+        });
+
+        gsap.utils.toArray('.reveal-scale').forEach(el => {
+            gsap.to(el, { opacity: 1, scale: 1, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 85%' } });
+        });
+
+        // Hero Animation Sequence
+        const heroTl = gsap.timeline();
+        heroTl.from('.floating-badge', { y: 50, opacity: 0, duration: 1 })
+            .from('.hero-title h1', { y: 100, opacity: 0, duration: 1.2, ease: 'power4.out' }, '-=0.5')
+            .from('.hero-title span', { y: 100, opacity: 0, duration: 1.2, ease: 'power4.out' }, '-=0.9')
+            .to('.hero-subtitle', { opacity: 1, y: 0, duration: 1 }, '-=0.5');
+
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.position = 'absolute';
+                particle.style.width = '4px';
+                particle.style.height = '4px';
+                particle.style.background = 'rgba(244, 114, 182, 0.4)';
+                particle.style.borderRadius = '50%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+
+                gsap.to(particle, {
+                    y: -window.innerHeight,
+                    x: (Math.random() - 0.5) * 200,
+                    opacity: 0,
+                    duration: 10 + Math.random() * 10,
+                    repeat: -1,
+                    ease: 'none',
+                    delay: Math.random() * 10
+                });
+            }
+        }
+        createParticles();
+
+        // 4. Custom Cursor Logic
+        const cursor = document.querySelector('.custom-cursor');
+        let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0;
+        document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+        function animateCursor() {
+            cursorX += (mouseX - cursorX) * 0.1; cursorY += (mouseY - cursorY) * 0.1;
+            cursor.style.left = (cursorX - 10) + 'px'; cursor.style.top = (cursorY - 10) + 'px';
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        document.querySelectorAll('a, button, .glass-card, tr').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // Hide custom cursor on mobile
+        if ('ontouchstart' in window) {
+            cursor.style.display = 'none';
+        }
+    </script>
+
+</body>
+
+</html>
