@@ -149,6 +149,87 @@
 
         /* ✏️ ÁREA PARA CSS ADICIONAL ESPECÍFICO DA PÁGINA */
         /* {{CUSTOM_PAGE_STYLES}} */
+
+        /* [TABLE] Comparison Table Styles */
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, rgba(244, 114, 182, 0.2), rgba(124, 58, 237, 0.2));
+            padding: 1rem;
+            text-align: center;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            border-bottom: 2px solid rgba(244, 114, 182, 0.3);
+        }
+
+        .comparison-table th:first-child {
+            text-align: left;
+        }
+
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .comparison-table td:first-child {
+            text-align: left;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        /* [MOBILE] Mobile Responsiveness */
+        @media (max-width: 640px) {
+
+            /* Hide custom cursor on mobile */
+            .custom-cursor {
+                display: none !important;
+            }
+
+            /* Reduce glass card padding */
+            .glass-card {
+                padding: 1.5rem !important;
+            }
+
+            /* Smaller table font */
+            .comparison-table {
+                font-size: 0.875rem;
+            }
+
+            /* Sticky first column with opaque background to prevent overlap */
+            .comparison-table td:first-child {
+                position: sticky;
+                left: 0;
+                background: #030712;
+                z-index: 20;
+                min-width: 140px;
+                padding-right: 0.75rem;
+                box-shadow: 2px 0 8px rgba(0, 0, 0, 0.5);
+            }
+
+            .comparison-table th:first-child {
+                position: sticky;
+                left: 0;
+                background: linear-gradient(135deg, #1e1433, #1a0f2e);
+                z-index: 21;
+                min-width: 140px;
+                box-shadow: 2px 0 8px rgba(0, 0, 0, 0.5);
+            }
+
+            .comparison-table th:not(:first-child) {
+                z-index: 10;
+            }
+        }
     </style>
 </head>
 
@@ -255,8 +336,385 @@
 
     <!-- ✏️ ÁREA DE CONTEÚDO DINÂMICO DA PÁGINA -->
     <!-- ========================================== -->
-    <!-- Inserir todas as sections específicas aqui -->
-    <!-- Exemplo: Seções de análise, tabelas, grids, etc. -->
+    <!-- 📚 MEGA TUTORIAL DE COMPONENTES -->
+    <!-- Abaixo estão exemplos de TODOS os componentes disponíveis -->
+    <!-- Copie e adapte conforme necessário para seu conteúdo -->
+
+    <!-- ============================================ -->
+    <!-- [EXEMPLO 1] TABELA COMPARATIVA (Comparison Table) -->
+    <!-- ============================================ -->
+    <!-- 💡 USO: Comparação de planos, features, preços, pontuações, etc -->
+    <!-- 📱 RESPONSIVO: Primeira coluna fica fixa ao rolar horizontalmente no mobile -->
+    <section id="exemplo-tabela" class="py-32 px-6 bg-gradient-to-b from-transparent via-slate-900/20 to-transparent">
+        <div class="max-w-7xl mx-auto">
+            <div class="reveal-section text-center mb-16">
+                <span class="text-xs font-black text-purple-400 uppercase tracking-[0.3em] mb-4 block">Exemplo 1</span>
+                <h2 class="text-4xl md:text-6xl font-black mb-6 text-white">
+                    Tabela <span class="gradient-text">Comparativa</span>
+                </h2>
+                <p class="text-slate-400 text-lg max-w-3xl mx-auto">
+                    Perfeita para comparar planos, features ou pontuações. A primeira coluna fica fixa no mobile.
+                </p>
+            </div>
+
+            <!-- Wrapper com glass-card e padding -->
+            <div class="glass-card p-1 rounded-3xl overflow-hidden reveal-scale">
+                <div class="overflow-x-auto">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th class="text-left">Recurso</th>
+                                <th><span class="text-blue-400">Free</span><br><span
+                                        class="text-xs text-slate-500 normal-case mt-1 block">Grátis</span></th>
+                                <th><span class="text-purple-400">Plus</span><br><span
+                                        class="text-xs text-slate-500 normal-case mt-1 block">R$ 29/mês</span></th>
+                                <th><span class="text-rose-400">Pro</span><br><span
+                                        class="text-xs text-slate-500 normal-case mt-1 block">R$ 99/mês</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Usuários</td>
+                                <td class="text-slate-300">1</td>
+                                <td class="text-slate-300">5</td>
+                                <td class="text-rose-400 font-bold">Ilimitado</td>
+                            </tr>
+                            <tr>
+                                <td>Storage</td>
+                                <td class="text-slate-300">5 GB</td>
+                                <td class="text-slate-300">50 GB</td>
+                                <td class="text-rose-400 font-bold">500 GB</td>
+                            </tr>
+                            <tr>
+                                <td>API Access</td>
+                                <td class="text-slate-500">Não</td>
+                                <td class="text-green-400">✓ Básico</td>
+                                <td class="text-green-400 font-bold">✓ Avançado</td>
+                            </tr>
+                            <tr>
+                                <td>Suporte</td>
+                                <td class="text-slate-300">Email</td>
+                                <td class="text-purple-400">Email + Chat</td>
+                                <td class="text-rose-400 font-bold">24/7 Premium</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- [EXEMPLO 2] GRID DE CARDS (Glass Cards) -->
+    <!-- ============================================ -->
+    <!-- 💡 USO: Features, benefícios, categorias, análises -->
+    <!-- 📱 RESPONSIVO: 1 coluna no móvel, 2 no tablet, 3 no desktop -->
+    <section id="exemplo-cards" class="py-32 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="reveal-section text-center mb-16">
+                <span class="text-xs font-black text-rose-400 uppercase tracking-[0.3em] mb-4 block">Exemplo 2</span>
+                <h2 class="text-4xl md:text-6xl font-black mb-6 text-white">
+                    Grid de <span class="gradient-text">Cards</span>
+                </h2>
+                <p class="text-slate-400 text-lg max-w-3xl mx-auto">
+                    Ideal para apresentar features, pontos fortes/fracos, ou análises categorizadas.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Card 1: Com ícone -->
+                <div class="glass-card p-8 rounded-2xl reveal-scale">
+                    <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center mb-6">
+                        <span class="text-2xl">🚀</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Performance</h3>
+                    <p class="text-slate-400 leading-relaxed">
+                        Velocidade de resposta excepcional com otimizações avançadas para cargas de trabalho intensivas.
+                    </p>
+                </div>
+
+                <!-- Card 2: Com badge -->
+                <div class="glass-card p-8 rounded-2xl reveal-scale" style="transition-delay: 0.1s;">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="text-2xl">⚡</span>
+                        <span
+                            class="text-xs px-3 py-1 bg-yellow-400/20 text-yellow-300 rounded-full uppercase font-bold">Novo</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Inteligência</h3>
+                    <p class="text-slate-400 leading-relaxed">
+                        Capacidades melhoradas de raciocínio e compreensão contextual profunda.
+                    </p>
+                </div>
+
+                <!-- Card 3: Com lista -->
+                <div class="glass-card p-8 rounded-2xl reveal-scale" style="transition-delay: 0.2s;">
+                    <div class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center mb-6">
+                        <span class="text-2xl">✨</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Features</h3>
+                    <ul class="space-y-2 text-slate-400">
+                        <li class="flex items-center gap-2">
+                            <span class="text-green-400">✓</span>
+                            Multimodal
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="text-green-400">✓</span>
+                            Streaming
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="text-green-400">✓</span>
+                            API Robusta
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- [EXEMPLO 3] BADGES E TAGS -->
+    <!-- ============================================ -->
+    <!-- 💡 USO: Categorias, status, labels, versões -->
+    <section id="exemplo-badges" class="py-32 px-6 bg-gradient-to-b from-transparent via-slate-950/30 to-transparent">
+        <div class="max-w-5xl mx-auto">
+            <div class="reveal-section text-center mb-16">
+                <span class="text-xs font-black text-amber-400 uppercase tracking-[0.3em] mb-4 block">Exemplo 3</span>
+                <h2 class="text-4xl md:text-6xl font-black mb-6 text-white">
+                    Badges e <span class="gradient-text">Tags</span>
+                </h2>
+            </div>
+
+            <div class="glass-card p-8 rounded-2xl reveal-scale">
+                <!-- Status Badges -->
+                <div class="mb-8">
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Status Badges</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="px-4 py-2 bg-green-500/20 text-green-300 rounded-full text-sm font-bold">✓
+                            Ativo</span>
+                        <span class="px-4 py-2 bg-yellow-500/20 text-yellow-300 rounded-full text-sm font-bold">⚠ Em
+                            Análise</span>
+                        <span class="px-4 py-2 bg-red-500/20 text-red-300 rounded-full text-sm font-bold">✕
+                            Descontinuado</span>
+                        <span class="px-4 py-2 bg-blue-500/20 text-blue-300 rounded-full text-sm font-bold">🔔
+                            Beta</span>
+                    </div>
+                </div>
+
+                <!-- Category Tags -->
+                <div class="mb-8">
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Category Tags</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span
+                            class="text-xs px-3 py-1 bg-purple-500/20 border border-purple-500/30 rounded-full text-purple-300">IA</span>
+                        <span
+                            class="text-xs px-3 py-1 bg-rose-500/20 border border-rose-500/30 rounded-full text-rose-300">Machine
+                            Learning</span>
+                        <span
+                            class="text-xs px-3 py-1 bg-blue-500/20 border border-blue-500/30 rounded-full text-blue-300">NLP</span>
+                        <span
+                            class="text-xs px-3 py-1 bg-green-500/20 border border-green-500/30 rounded-full text-green-300">Computer
+                            Vision</span>
+                    </div>
+                </div>
+
+                <!-- Version Badges -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Version Badges</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <span
+                            class="px-4 py-2 bg-gradient-to-r from-orange-500 to-rose-500 rounded-full text-white text-sm font-bold">v4.5</span>
+                        <span
+                            class="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white text-sm font-bold">Ultra</span>
+                        <span
+                            class="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full text-white text-sm font-bold">Pro</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- [EXEMPLO 4] STATS GRID -->
+    <!-- ============================================ -->
+    <!-- 💡 USO: Estatísticas, métricas, KPIs, números importantes -->
+    <!-- 📱 RESPONSIVO: 2 colunas no mobile, 4 no desktop -->
+    <section id="exemplo-stats" class="py-32 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="reveal-section text-center mb-16">
+                <span class="text-xs font-black text-green-400 uppercase tracking-[0.3em] mb-4 block">Exemplo 4</span>
+                <h2 class="text-4xl md:text-6xl font-black mb-6 text-white">
+                    Stats <span class="gradient-text">Grid</span>
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <!-- Stat 1 -->
+                <div class="glass-card p-6 rounded-2xl text-center reveal-scale">
+                    <div class="text-4xl font-black text-blue-400 mb-2">95%</div>
+                    <div class="text-sm text-slate-400">Precisão</div>
+                </div>
+
+                <!-- Stat 2 -->
+                <div class="glass-card p-6 rounded-2xl text-center reveal-scale" style="transition-delay: 0.1s;">
+                    <div class="text-4xl font-black text-purple-400 mb-2">180</div>
+                    <div class="text-sm text-slate-400">Pts Totais</div>
+                </div>
+
+                <!-- Stat 3 -->
+                <div class="glass-card p-6 rounded-2xl text-center reveal-scale" style="transition-delay: 0.2s;">
+                    <div class="text-4xl font-black text-rose-400 mb-2">10/10</div>
+                    <div class="text-sm text-slate-400">Qualidade</div>
+                </div>
+
+                <!-- Stat 4 -->
+                <div class="glass-card p-6 rounded-2xl text-center reveal-scale" style="transition-delay: 0.3s;">
+                    <div class="text-4xl font-black text-green-400 mb-2">1º</div>
+                    <div class="text-sm text-slate-400">Ranking</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- [EXEMPLO 5] TWO COLUMN LAYOUT -->
+    <!-- ============================================ -->
+    <!-- 💡 USO: Pontos fortes vs fracos, comparação lado a lado -->
+    <!-- 📱 RESPONSIVO: Empilha verticalmente no mobile -->
+    <section id="exemplo-two-columns"
+        class="py-32 px-6 bg-gradient-to-b from-transparent via-slate-900/20 to-transparent">
+        <div class="max-w-6xl mx-auto">
+            <div class="reveal-section text-center mb-16">
+                <span class="text-xs font-black text-cyan-400 uppercase tracking-[0.3em] mb-4 block">Exemplo 5</span>
+                <h2 class="text-4xl md:text-6xl font-black mb-6 text-white">
+                    Two Column <span class="gradient-text">Layout</span>
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Coluna 1: Pontos Fortes -->
+                <div class="glass-card p-8 rounded-2xl reveal-left">
+                    <h3 class="text-green-400 font-bold text-xl mb-6 flex items-center gap-2">
+                        <span>✓</span> Pontos Fortes
+                    </h3>
+                    <ul class="space-y-3 text-slate-300">
+                        <li class="flex items-start gap-3">
+                            <span class="text-green-400 mt-1">•</span>
+                            <span>Performance excepcional em tarefas complexas</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-green-400 mt-1">•</span>
+                            <span>Interface intuitiva e fácil de usar</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-green-400 mt-1">•</span>
+                            <span>Documentação completa e bem estruturada</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Coluna 2: Pontos Fracos -->
+                <div class="glass-card p-8 rounded-2xl reveal-right">
+                    <h3 class="text-red-400 font-bold text-xl mb-6 flex items-center gap-2">
+                        <span>⚠</span> Pontos Fracos
+                    </h3>
+                    <ul class="space-y-3 text-slate-300">
+                        <li class="flex items-start gap-3">
+                            <span class="text-red-400 mt-1">•</span>
+                            <span>Custo elevado para grandes volumes</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-red-400 mt-1">•</span>
+                            <span>Requer conhecimento técnico avançado</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-red-400 mt-1">•</span>
+                            <span>Tempo de resposta pode variar</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- [EXEMPLO 6] FEATURE HIGHLIGHT -->
+    <!-- ============================================ -->
+    <!-- 💡 USO: Destacar um recurso específico, chamada à ação -->
+    <section id="exemplo-highlight" class="py-32 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="glass-card p-12 rounded-3xl reveal-scale">
+                <div class="flex flex-col md:flex-row items-center gap-8">
+                    <!-- Ícone/Imagem -->
+                    <div class="flex-shrink-0">
+                        <div
+                            class="w-24 h-24 rounded-2xl bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center text-5xl">
+                            ⚡
+                        </div>
+                    </div>
+
+                    <!-- Conteúdo -->
+                    <div class="flex-1 text-center md:text-left">
+                        <h3 class="text-3xl font-black text-white mb-4">
+                            Recurso <span class="gradient-text">Destaque</span>
+                        </h3>
+                        <p class="text-slate-400 text-lg leading-relaxed">
+                            Este é um exemplo de como destacar um recurso importante ou fazer uma chamada à ação.
+                            O layout se adapta automaticamente entre desktop e mobile.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- [EXEMPLO 7] ESTRUTURA PARA GRÁFICOS -->
+    <!-- ============================================ -->
+    <!-- 💡 USO: Chart.js, D3.js, ou qualquer biblioteca de gráficos -->
+    <!-- 💡 NOTA: Você precisa incluir a biblioteca e configurar os dados -->
+    <section id="exemplo-graficos" class="py-32 px-6 bg-gradient-to-b from-transparent via-slate-950/30 to-transparent">
+        <div class="max-w-6xl mx-auto">
+            <div class="reveal-section text-center mb-16">
+                <span class="text-xs font-black text-orange-400 uppercase tracking-[0.3em] mb-4 block">Exemplo 7</span>
+                <h2 class="text-4xl md:text-6xl font-black mb-6 text-white">
+                    Estrutura para <span class="gradient-text">Gráficos</span>
+                </h2>
+                <p class="text-slate-400 text-lg">
+                    Container preparado para Chart.js, D3.js ou qualquer biblioteca de visualização
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Gráfico 1 -->
+                <div class="glass-card p-6 rounded-2xl reveal-scale">
+                    <h3 class="text-xl font-bold text-white mb-4">Gráfico de Barras</h3>
+                    <div style="height: 300px;"
+                        class="flex items-center justify-center border border-dashed border-white/20 rounded-xl">
+                        <p class="text-slate-500 text-sm">
+                            📊 Seu gráfico aqui<br>
+                            <span class="text-xs">(usar Chart.js ou similar)</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Gráfico 2 -->
+                <div class="glass-card p-6 rounded-2xl reveal-scale" style="transition-delay: 0.1s;">
+                    <h3 class="text-xl font-bold text-white mb-4">Gráfico de Pizza</h3>
+                    <div style="height: 300px;"
+                        class="flex items-center justify-center border border-dashed border-white/20 rounded-xl">
+                        <p class="text-slate-500 text-sm">
+                            📈 Seu gráfico aqui<br>
+                            <span class="text-xs">(usar Chart.js ou similar)</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- FIM DOS EXEMPLOS - ADICIONE SEU CONTEÚDO AQUI -->
+    <!-- ============================================ -->
     {{MAIN_CONTENT_SECTIONS}}
     <!-- ========================================== -->
 

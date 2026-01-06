@@ -224,18 +224,24 @@
             .comparison-table td:first-child {
                 position: sticky;
                 left: 0;
-                background: rgba(3, 7, 18, 0.95);
-                z-index: 10;
-                min-width: 120px;
+                background: #030712;
+                z-index: 20;
+                min-width: 140px;
                 padding-right: 0.75rem;
+                box-shadow: 2px 0 8px rgba(0, 0, 0, 0.5);
             }
 
             .comparison-table th:first-child {
                 position: sticky;
                 left: 0;
-                background: linear-gradient(135deg, rgba(244, 114, 182, 0.25), rgba(124, 58, 237, 0.25));
-                z-index: 11;
-                min-width: 120px;
+                background: linear-gradient(135deg, #1e1433, #1a0f2e);
+                z-index: 21;
+                min-width: 140px;
+                box-shadow: 2px 0 8px rgba(0, 0, 0, 0.5);
+            }
+
+            .comparison-table th:not(:first-child) {
+                z-index: 10;
             }
         }
     </style>
